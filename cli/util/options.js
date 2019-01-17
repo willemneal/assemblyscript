@@ -12,7 +12,7 @@
 function parse(argv, config) {
   var options = {};
   var unknown = [];
-  var arguments = [];
+  var _arguments = [];
   var trailing = [];
 
   // make an alias map and initialize defaults
@@ -42,7 +42,7 @@ function parse(argv, config) {
       }
     } else {
       if (arg.charCodeAt(0) == 45) option = config[key = arg]; // exact
-      else { arguments.push(arg); continue; } // argument
+      else { _arguments.push(arg); continue; } // argument
     }
     if (option) {
       if (option.type == null || option.type === "b") options[key] = true; // flag
@@ -74,7 +74,7 @@ function parse(argv, config) {
   }
   while (i < k) trailing.push(argv[i++]); // trailing
 
-  return { options, unknown, arguments, trailing };
+  return { options, unknown, _arguments, trailing };
 }
 
 exports.parse = parse;
