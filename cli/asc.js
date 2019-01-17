@@ -139,7 +139,7 @@ exports.main = function main(argv, options, callback) {
 
   const opts = optionsUtil.parse(argv, exports.options);
   const args = opts.options;
-  argv = opts.arguments;
+  argv = opts._arguments;
   if (args.noColors) {
     colorsUtil.stdout.supported =
     colorsUtil.stderr.supported = false;
