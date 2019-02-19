@@ -4,7 +4,8 @@ export abstract class Iterable<T> {
 
 @sealed
 export abstract class Iterator<T> {
-
+  next: (i: u64) => Iterator<T>;
+  value: T;
   // private constructor(iterable: Iterable<T>) {
   // }
 
@@ -21,6 +22,8 @@ export abstract class Iterator<T> {
   // └─────────────────────────────────────────────────────────┴───┴─┘
   // D: Done flag
 
+
+
   // get value(this: u64): T {
   //   ?
   // }
@@ -29,7 +32,7 @@ export abstract class Iterator<T> {
   //   ?
   // }
 
-  done(this: u64): bool {
-    return <bool>(this & 1);
+  done(): bool {
+    return this.next !== null
   }
 }
