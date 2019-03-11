@@ -279,10 +279,13 @@ exports.main = async function main(argv, options, callback) {
         libFiles = [ path.basename(libDir) ];
         libDir = path.dirname(libDir);
       } else {
-        libFiles = listFiles(libDir);
+        libFiles = await listFiles(libDir);
       }
       for (let j = 0, l = libFiles.length; j < l; ++j) {
         let libPath = libFiles[j];
+        if (!libPath.endsWith(".ts")){
+          continue;
+        }
         let libText = await readFile(path.join(libDir, libPath));
         if (libText === null) return callback(Error("Library file '" + libPath + "' not found."));
         stats.parseCount++;
@@ -750,7 +753,7 @@ exports.main = async function main(argv, options, callback) {
     }
   }
 
-  function listFilesNode(dirname, baseDir) {
+  async function listFilesNode(dirname, baseDir) {
     let _path = dirname ? path.join(baseDir, dirname): dirname;
     var files;
     try {

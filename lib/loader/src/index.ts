@@ -385,6 +385,7 @@ class TableWrapper implements ASTable {
     public wrapFunction(fn: any) {
         const wrap: any = (...args: any[]) => {
             this.setargc(args.length);
+            let _args = args.map(e => e[SELF_REF] | e);
             return fn(...args);
         };
         // adding a function to the table with `newFunction` is limited to actual WebAssembly functions,
@@ -499,7 +500,7 @@ function resolveContext<T = ASExport>(instance: WebAssembly.Instance, ctx: Insta
                     Object.defineProperty(curr, name, {
                         get() {
                           let ptr = getter(this[SELF_REF]);
-                          return refType ? resolved[refType].wrap(ptr) : ptr;
+                          return refType && resolved[refType] ? resolved[refType].wrap(ptr) : ptr;
                         },
                         set(value) { setter(this[SELF_REF], value[SELF_REF] | value); },
                         enumerable: true,
@@ -514,7 +515,7 @@ function resolveContext<T = ASExport>(instance: WebAssembly.Instance, ctx: Insta
                             table.setargc(args.length);
                             let _args = args.map(e => e[SELF_REF] | e);
                             let ptr = elem(this[SELF_REF], ..._args);
-                            return refType ? resolved[refType].wrap(ptr) : ptr;
+                            return refType && resolved[refType] ? resolved[refType].wrap(ptr) : ptr;
                         },
                     });
                 }
