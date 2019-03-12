@@ -108,7 +108,9 @@ import {
   EnumDeclaration,
   ExportStatement,
   ExpressionStatement,
+  FieldDeclaration,
   ForStatement,
+  FunctionDeclaration,
   IfStatement,
   ImportStatement,
   InstanceOfExpression,
@@ -146,8 +148,7 @@ import {
 
   nodeIsConstantValue,
   findDecorator,
-  FieldDeclaration,
-  FunctionDeclaration
+  isTypeOmitted
 } from "./ast";
 
 import {
@@ -410,7 +411,8 @@ export class Compiler extends DiagnosticEmitter {
       isSharedMemory ? options.sharedMemory : Module.UNLIMITED_MEMORY,
       this.memorySegments,
       options.target,
-      "memory"
+      "memory",
+      isSharedMemory
     );
 
     // import memory if requested (default memory is named '0' by Binaryen)
@@ -1080,7 +1082,7 @@ export class Compiler extends DiagnosticEmitter {
       assert(bodyNode.kind == NodeKind.EXPRESSION);
 
       // must be an arrow function
-      assert(instance.is(CommonFlags.ARROW));
+      assert(instance.prototype.arrowKind);
 
       // none of the following can be an arrow function
       assert(!instance.isAny(CommonFlags.CONSTRUCTOR | CommonFlags.GET | CommonFlags.SET | CommonFlags.MAIN));
@@ -2367,7 +2369,7 @@ export class Compiler extends DiagnosticEmitter {
         break;
       }
       case NodeKind.FUNCTION: {
-        expr = this.compileFunctionExpression(<FunctionExpression>expression, contextualType);
+        expr = this.compileFunctionExpression(<FunctionExpression>expression, contextualType.signatureReference);
         break;
       }
       case NodeKind.IDENTIFIER:
@@ -2716,7 +2718,7 @@ export class Compiler extends DiagnosticEmitter {
 
         rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
         rightType = this.currentType;
-        if (commonType = Type.commonCompatible(leftType, rightType, true)) {
+        if (commonType = Type.commonDenominator(leftType, rightType, true)) {
           leftExpr = this.convertExpression(
             leftExpr,
             leftType,
@@ -2822,7 +2824,7 @@ export class Compiler extends DiagnosticEmitter {
 
         rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
         rightType = this.currentType;
-        if (commonType = Type.commonCompatible(leftType, rightType, true)) {
+        if (commonType = Type.commonDenominator(leftType, rightType, true)) {
           leftExpr = this.convertExpression(
             leftExpr,
             leftType,
@@ -2928,7 +2930,7 @@ export class Compiler extends DiagnosticEmitter {
 
         rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
         rightType = this.currentType;
-        if (commonType = Type.commonCompatible(leftType, rightType, true)) {
+        if (commonType = Type.commonDenominator(leftType, rightType, true)) {
           leftExpr = this.convertExpression(
             leftExpr,
             leftType,
@@ -3034,7 +3036,7 @@ export class Compiler extends DiagnosticEmitter {
 
         rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
         rightType = this.currentType;
-        if (commonType = Type.commonCompatible(leftType, rightType, true)) {
+        if (commonType = Type.commonDenominator(leftType, rightType, true)) {
           leftExpr = this.convertExpression(
             leftExpr,
             leftType,
@@ -3143,7 +3145,7 @@ export class Compiler extends DiagnosticEmitter {
 
         rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
         rightType = this.currentType;
-        if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+        if (commonType = Type.commonDenominator(leftType, rightType, false)) {
           leftExpr = this.convertExpression(
             leftExpr,
             leftType,
@@ -3203,6 +3205,12 @@ export class Compiler extends DiagnosticEmitter {
             expr = module.createBinary(BinaryOp.EqF64, leftExpr, rightExpr);
             break;
           }
+          case TypeKind.V128: {
+            expr = module.createUnary(UnaryOp.AllTrueVecI8x16,
+              module.createBinary(BinaryOp.EqVecI8x16, leftExpr, rightExpr)
+            );
+            break;
+          }
           default: {
             assert(false);
             expr = module.createUnreachable();
@@ -3231,7 +3239,7 @@ export class Compiler extends DiagnosticEmitter {
 
         rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
         rightType = this.currentType;
-        if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+        if (commonType = Type.commonDenominator(leftType, rightType, false)) {
           leftExpr = this.convertExpression(
             leftExpr,
             leftType,
@@ -3291,6 +3299,12 @@ export class Compiler extends DiagnosticEmitter {
             expr = module.createBinary(BinaryOp.NeF64, leftExpr, rightExpr);
             break;
           }
+          case TypeKind.V128: {
+            expr = module.createUnary(UnaryOp.AnyTrueVecI8x16,
+              module.createBinary(BinaryOp.NeVecI8x16, leftExpr, rightExpr)
+            );
+            break;
+          }
           default: {
             assert(false);
             expr = module.createUnreachable();
@@ -3329,7 +3343,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -3425,7 +3439,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -3521,7 +3535,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -3718,7 +3732,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -3833,7 +3847,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -4227,7 +4241,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -4323,7 +4337,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -4422,7 +4436,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           rightExpr = this.compileExpressionRetainType(right, leftType, WrapMode.NONE);
           rightType = this.currentType;
-          if (commonType = Type.commonCompatible(leftType, rightType, false)) {
+          if (commonType = Type.commonDenominator(leftType, rightType, false)) {
             leftExpr = this.convertExpression(
               leftExpr,
               leftType,
@@ -5090,8 +5104,8 @@ export class Compiler extends DiagnosticEmitter {
               if (inferredType) {
                 argumentExprs[i] = this.compileExpressionRetainType(argumentExpression, inferredType, WrapMode.NONE);
                 let commonType: Type | null;
-                if (!(commonType = Type.commonCompatible(inferredType, this.currentType, true))) {
-                  if (!(commonType = Type.commonCompatible(inferredType, this.currentType, false))) {
+                if (!(commonType = Type.commonDenominator(inferredType, this.currentType, true))) {
+                  if (!(commonType = Type.commonDenominator(inferredType, this.currentType, false))) {
                     this.error(
                       DiagnosticCode.Type_0_is_not_assignable_to_type_1,
                       parameterNodes[i].type.range, this.currentType.toString(), inferredType.toString()
@@ -5906,30 +5920,135 @@ export class Compiler extends DiagnosticEmitter {
 
   compileFunctionExpression(
     expression: FunctionExpression,
-    contextualType: Type
+    contextualSignature: Signature | null
   ): ExpressionRef {
-    var declaration = expression.declaration;
-    var name = declaration.name;
-    var simpleName = (name.text.length
-      ? name.text
-      : "anonymous") + "|" + this.functionTable.length.toString(10);
+    var declaration = expression.declaration.clone(); // generic contexts can have multiple
+    assert(!declaration.typeParameters); // function expression cannot be generic
     var flow = this.currentFlow;
+    var actualFunction = flow.actualFunction;
     var prototype = new FunctionPrototype(
-      simpleName,
-      flow.actualFunction,
-      declaration.clone(), // same function can be compiled multiple times if generic
+      declaration.name.text.length
+        ? declaration.name.text
+        : "anonymous|" + (actualFunction.nextAnonymousId++).toString(10),
+      actualFunction,
+      declaration,
       DecoratorFlags.NONE
     );
-    var instance = this.compileFunctionUsingTypeArguments(
-      prototype,
-      [],
-      makeMap<string,Type>(flow.contextualTypeArguments),
-      declaration
-    );
-    if (!instance) return this.module.createUnreachable();
-    this.currentType = instance.signature.type; // TODO: get cached type?
-    // NOTE that, in order to make this work in every case, the function must be represented by a
-    // value, so we add it and rely on the optimizer to figure out where it can be called directly.
+    var instance: Function | null;
+    var contextualTypeArguments = makeMap(flow.contextualTypeArguments);
+
+    // compile according to context. this differs from a normal function in that omitted parameter
+    // and return types can be inferred and omitted arguments can be replaced with dummies.
+    if (contextualSignature) {
+      let signatureNode = prototype.signatureNode;
+      let parameterNodes = signatureNode.parameters;
+      let numPresentParameters = parameterNodes.length;
+
+      // must not require more than the maximum number of parameters
+      let parameterTypes = contextualSignature.parameterTypes;
+      let numParameters = parameterTypes.length;
+      if (numPresentParameters > numParameters) {
+        this.error(
+          DiagnosticCode.Expected_0_arguments_but_got_1,
+          expression.range, numParameters.toString(), numPresentParameters.toString()
+        );
+        return this.module.createUnreachable();
+      }
+
+      // check non-omitted parameter types
+      let parameterNames = new Array<string>(numPresentParameters);
+      for (let i = 0; i < numPresentParameters; ++i) {
+        let parameterNode = parameterNodes[i];
+        parameterNames[i] = parameterNode.name.text; // use actual name
+        if (!isTypeOmitted(parameterNode.type)) {
+          let resolvedType = this.resolver.resolveType(
+            parameterNode.type,
+            actualFunction.parent,
+            contextualTypeArguments
+          );
+          if (!resolvedType) return this.module.createUnreachable();
+          if (!parameterTypes[i].isStrictlyAssignableTo(resolvedType)) {
+            this.error(
+              DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+              parameterNode.range, parameterTypes[i].toString(), resolvedType.toString()
+            );
+            return this.module.createUnreachable();
+          }
+        }
+        // any unused parameters are inherited but ignored
+      }
+
+      // check non-omitted return type
+      let returnType = contextualSignature.returnType;
+      if (!isTypeOmitted(signatureNode.returnType)) {
+        let resolvedType = this.resolver.resolveType(
+          signatureNode.returnType,
+          actualFunction.parent,
+          contextualTypeArguments
+        );
+        if (!resolvedType) return this.module.createUnreachable();
+        if (
+          returnType == Type.void
+            ? resolvedType != Type.void
+            : !resolvedType.isStrictlyAssignableTo(returnType)
+        ) {
+          this.error(
+            DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+            signatureNode.returnType.range, resolvedType.toString(), returnType.toString()
+          );
+          return this.module.createUnreachable();
+        }
+      }
+
+      // check explicit this type
+      let thisType = contextualSignature.thisType;
+      let thisTypeNode = signatureNode.explicitThisType;
+      if (thisTypeNode) {
+        if (!thisType) {
+          this.error(
+            DiagnosticCode._this_cannot_be_referenced_in_current_location,
+            thisTypeNode.range
+          );
+          return this.module.createUnreachable();
+        }
+        let resolvedType = this.resolver.resolveType(
+          thisTypeNode,
+          actualFunction.parent,
+          contextualTypeArguments
+        );
+        if (!resolvedType) return this.module.createUnreachable();
+        if (!thisType.isStrictlyAssignableTo(resolvedType)) {
+          this.error(
+            DiagnosticCode.Type_0_is_not_assignable_to_type_1,
+            thisTypeNode.range, thisType.toString(), resolvedType.toString()
+          );
+          return this.module.createUnreachable();
+        }
+      }
+
+      let signature = new Signature(parameterTypes, returnType, thisType);
+      signature.requiredParameters = numParameters; // !
+      signature.parameterNames = parameterNames;
+      instance = new Function(
+        prototype.name,
+        prototype,
+        signature,
+        contextualTypeArguments
+      );
+      if (!this.compileFunction(instance)) return this.module.createUnreachable();
+      this.currentType = contextualSignature.type;
+
+    // otherwise compile like a normal function
+    } else {
+      instance = this.compileFunctionUsingTypeArguments(
+        prototype,
+        [],
+        contextualTypeArguments
+      );
+      if (!instance) return this.module.createUnreachable();
+      this.currentType = instance.signature.type;
+    }
+
     var index = this.ensureFunctionTableEntry(instance); // reports
     return index < 0
       ? this.module.createUnreachable()
@@ -6960,7 +7079,7 @@ export class Compiler extends DiagnosticEmitter {
 
     outerFlow.inheritMutual(ifThenFlow, ifElseFlow);
 
-    var commonType = Type.commonCompatible(ifThenType, ifElseType, false);
+    var commonType = Type.commonDenominator(ifThenType, ifElseType, false);
     if (!commonType) {
       this.error(
         DiagnosticCode.Type_0_is_not_assignable_to_type_1,

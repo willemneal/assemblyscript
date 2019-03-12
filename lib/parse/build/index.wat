@@ -1,14 +1,13 @@
 (module
- (type $ii_ (func (param i32 i32)))
- (type $ii (func (param i32) (result i32)))
- (type $iiiiii (func (param i32 i32 i32 i32 i32) (result i32)))
- (type $iii_ (func (param i32 i32 i32)))
- (type $iiiiii_ (func (param i32 i32 i32 i32 i32 i32)))
- (type $iiiii_ (func (param i32 i32 i32 i32 i32)))
- (type $iiii_ (func (param i32 i32 i32 i32)))
- (type $_ (func))
- (type $I (func (result i64)))
- (type $i_ (func (param i32)))
+ (type $FUNCSIG$vii (func (param i32 i32)))
+ (type $FUNCSIG$ii (func (param i32) (result i32)))
+ (type $FUNCSIG$iiiiii (func (param i32 i32 i32 i32 i32) (result i32)))
+ (type $FUNCSIG$viii (func (param i32 i32 i32)))
+ (type $FUNCSIG$viiiiii (func (param i32 i32 i32 i32 i32 i32)))
+ (type $FUNCSIG$viiiii (func (param i32 i32 i32 i32 i32)))
+ (type $FUNCSIG$viiii (func (param i32 i32 i32 i32)))
+ (type $FUNCSIG$v (func))
+ (type $FUNCSIG$vi (func (param i32)))
  (type $FUNCSIG$i (func (result i32)))
  (import "env" "memory" (memory $0 0))
  (import "options" "onSection" (func $assembly/options/onSection (param i32 i32 i32 i32 i32) (result i32)))
@@ -168,19 +167,7 @@
   global.set $assembly/index/off
   local.get $2
  )
- (func $~lib/internal/arraybuffer/computeSize (; 20 ;) (type $ii) (param $0 i32) (result i32)
-  i32.const 1
-  i32.const 32
-  get_local $0
-  get_global $~lib/internal/arraybuffer/HEADER_SIZE
-  i32.add
-  i32.const 1
-  i32.sub
-  i32.clz
-  i32.sub
-  i32.shl
- )
- (func $~lib/internal/arraybuffer/allocateUnsafe (; 21 ;) (type $ii) (param $0 i32) (result i32)
+ (func $assembly/index/readVarint (; 20 ;) (type $FUNCSIG$ii) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   get_local $0
@@ -266,124 +253,34 @@
   local.get $4
   select
  )
- (func $~lib/string/String.__concat (; 38 ;) (type $iii) (param $0 i32) (param $1 i32) (result i32)
-  get_local $0
-  i32.eqz
-  if
-   i32.const 864
-   set_local $0
-  end
-  get_local $0
-  get_local $1
-  call $~lib/string/String#concat
- )
- (func $assembly/host/index/log<String> (; 39 ;) (type $iv) (param $0 i32)
-  get_local $0
-  call $assembly/host/index/_log_str
- )
- (func $assembly/host/index/err (; 40 ;) (type $iv) (param $0 i32)
-  i32.const 840
-  get_local $0
-  call $~lib/string/String.__concat
-  call $assembly/host/index/log<String>
-  unreachable
- )
- (func $assembly/module/index/typeName (; 41 ;) (type $ii) (param $0 i32) (result i32)
-  (local $1 i32)
-  block $break|0
-   block $case7|0
-    block $case6|0
-     block $case5|0
-      block $case4|0
-       block $case3|0
-        block $case2|0
-         block $case1|0
-          block $case0|0
-           get_local $0
-           set_local $1
-           get_local $1
-           i32.const 127
-           i32.eq
-           br_if $case0|0
-           get_local $1
-           i32.const 126
-           i32.eq
-           br_if $case1|0
-           get_local $1
-           i32.const 125
-           i32.eq
-           br_if $case2|0
-           get_local $1
-           i32.const 124
-           i32.eq
-           br_if $case3|0
-           get_local $1
-           i32.const 112
-           i32.eq
-           br_if $case4|0
-           get_local $1
-           i32.const 96
-           i32.eq
-           br_if $case5|0
-           get_local $1
-           i32.const 64
-           i32.eq
-           br_if $case6|0
-           br $case7|0
-          end
-          i32.const 688
-          return
-         end
-         i32.const 704
-         return
-        end
-        i32.const 720
-        return
-       end
-       i32.const 736
-       return
-      end
-      i32.const 752
-      return
-     end
-     i32.const 776
-     return
-    end
-    i32.const 792
-    return
-   end
-   i32.const 808
-   call $assembly/host/index/err
-  end
-  i32.const 912
- )
- (func $~lib/array/Array<i32>#__get (; 42 ;) (type $iii) (param $0 i32) (param $1 i32) (result i32)
+ (func $assembly/index/readVarint64 (; 21 ;) (type $FUNCSIG$v)
+  (local $0 i32)
+  (local $1 i64)
   (local $2 i32)
-  (local $3 i32)
+  (local $3 i64)
   (local $4 i64)
-  (local $5 i64)
   global.get $assembly/index/off
-  local.set $3
+  local.set $0
   loop $continue|0
-   local.get $3
+   local.get $0
    local.tee $2
    i32.const 1
    i32.add
-   local.set $3
+   local.set $0
    local.get $2
    i64.load8_u
    local.tee $4
    i64.const 127
    i64.and
-   local.get $0
-   i64.shl
    local.get $1
+   i64.shl
+   local.get $3
    i64.or
-   local.set $1
-   local.get $0
+   local.set $3
+   local.get $1
    i64.const 7
    i64.add
-   local.set $0
+   local.set $1
    local.get $4
    i64.const 128
    i64.and
@@ -391,32 +288,10 @@
    i64.ne
    br_if $continue|0
   end
-  local.get $3
+  local.get $0
   global.set $assembly/index/off
-  i64.const -1
-  local.get $0
-  i64.shl
-  local.get $1
-  i64.or
-  local.set $5
-  local.get $0
-  i64.const 64
-  i64.lt_u
-  local.tee $2
-  if
-   local.get $4
-   i64.const 64
-   i64.and
-   i64.const 0
-   i64.ne
-   local.set $2
-  end
-  local.get $5
-  local.get $1
-  local.get $2
-  select
  )
- (func $assembly/index/skipInitExpr (; 22 ;) (type $_)
+ (func $assembly/index/skipInitExpr (; 22 ;) (type $FUNCSIG$v)
   (local $0 i32)
   (local $1 i32)
   global.get $assembly/index/off
@@ -456,6 +331,8 @@
          br $case5|0
         end
        end
+       call $assembly/index/readVarint64
+       br $break|0
       end
       global.get $assembly/index/off
       local.tee $0
@@ -543,7 +420,7 @@
   get_local $2
   i32.store offset=8
  )
- (func $assembly/index/parse (; 23 ;) (type $ii_) (param $0 i32) (param $1 i32)
+ (func $assembly/index/parse (; 23 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -1367,7 +1244,7 @@
    end
   end
  )
- (func $null (; 24 ;) (type $_)
+ (func $null (; 24 ;) (type $FUNCSIG$v)
   nop
  )
  (func $null (; 91 ;) (type $v)
