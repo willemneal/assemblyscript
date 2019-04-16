@@ -10,7 +10,6 @@ import {
 
 import {Buffer} from "../buffer";
 import {Section} from ".";
-import {log} from '../host';
 
 function getExternalKindName(kind: ExternalKind): string{
   switch(kind){

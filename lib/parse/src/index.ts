@@ -1,58 +1,33 @@
 import { Type, SectionId, ExternalKind, newParser } from "./common";
-import  * as assert from "assert";
+import * as assert from "assert";
 export { Type, SectionId, ExternalKind };
-import  * as loader from "../../../dist/assemblyscript-loader";
-import ASModule from "../build";
-import {ASImport} from "./asImport";
+import * as loader from "../../loader/lib";
+// import ASModule from "../build";
+// import { ASImport } from "./asImport";
+import { ASImport, Host, Env } from "../../host/src";
 
 
-type Instance = typeof ASModule;
+type Instance = any;
 
-class index extends ASImport {
-  debug():void {debugger; }
-  _log(start: number, sizeof: number):void {
-    var begin = start >> 2;
-    var size = sizeof >> 2;
-    if (size == 1 ) {
-      console.log(start);
-    } else {
-      let str = []
-      let len = 0;
-      for (let i = begin; i < begin + size; i++){
-        let line = `| ${i} | ${this.__memory__.I32[i] >> 2}`;
-        len = Math.max(len, line.length);
-        str.push(line);
-      }
-      let space = " ";
-      let output = str.map((v: string): string => v + (space as any).repeat(len - v.length + 1) + "|");
-      let dash = "-";
-      let line = (dash as any).repeat(len + 2);
-      console.log([line,output.join("\n" + line + "\n"),line].join("\n"));
-    }
-  }
+interface Module {
+  getType(): any;
+  hasStart: boolean;
+  print(): void;
 
-  _log_str(x: number): void {
-    console.log(loader.utils.readString(this.__memory__.U32, this.__memory__.U16, x))
-  }
-  _logi(x: number): void {
-    console.log(x);
-  }
-  _logf(x: number): void {
-    console.log(x);
-  }
 }
+
 
 // type Parser = {parse: (any)=> any, newParser: (any)=>any};
 /** Cached compiled parser. */
 var compiled: WebAssembly.Module | null = null;
 
 var WASM_DATA: string; // injected by webpack
-if (typeof WASM_DATA !== "string") WASM_DATA = require("fs").readFileSync(__dirname + "/../build/index.wasm", "base64");
+// if (typeof WASM_DATA !== "string") WASM_DATA = require("fs").readFileSync(__dirname + "/../build/index.wasm", "base64");
 
 export class WasmParser {
   instance: Instance & loader.ASInstance & loader.ASExport;
-  mod: ASModule.Module;
-  parser: ASModule.Parser;
+  mod: any;
+  parser: any;
 
   get memory(): loader.ASMemory {
     return this.instance.memory;
@@ -69,25 +44,21 @@ export class WasmParser {
     // use the binary as the parser's memory
     var nBytes = binary.length;
     var nPages = ((nBytes + 0xffff) & ~0xffff) >> 16;
-    var memory = loader.createMemory({ initial: nPages });
-    let Index = new index();
-    console.log((Index.__imports__))
-    var imports = {
-      ...(Index.__imports__),
-      env: {
-        abort: console.error,
-        memory
-      },
-      options: {},
-      }
-    this.instance  = loader.instantiate(compiled, imports);
-    Index.instance = this.instance;
-    var array = this.memory.newArray(binary);
-    var parser = new this.instance.Parser(array)
+    var imports = ASImport.createImport(Env, Host);
+    debugger;
+    this.instance = loader.instantiate(compiled, imports);
+    var array: any = this.memory.newArray(binary);
+    var parser = new (<any>this.instance.Parser)(array)
     this.parser = parser;
     parser.parse();
-    this.mod = <ASModule.Module>(<any>this.instance.Module).wrap(parser.module);
+    this.mod = (<any>this.instance.Module).wrap(parser.module);
     console.log(this.mod['self']);
+  }
+
+  async parse(binary: Uint8Array){
+    if (!compiled){
+      let fetch
+    }
   }
 
   get Type(): string {
@@ -100,20 +71,20 @@ export class WasmParser {
   }
 
   removeStartFunction(): Uint8Array {
-    var binary = <Uint8Array>this.memory.getArray(Uint8Array, this.instance.removeStartFunction(this.parser.module));
+    var binary = this.instance.removeStartFunction((<any>this.parser).module);
     return binary;
   }
 
   hasSection(id: SectionId): boolean {
-    return this.mod.hasSection(id);
+    return this.mod.getID(id) != 0;
   }
 
   removeDataSection(): Uint8Array {
-    return this.getByteArray(this.instance.removeSection(this.parser.module, SectionId.Data));
+    return this.getByteArray(<number><unknown>this.instance.removeSection(this.parser.module, SectionId.Data));
   }
 
   exportDataSection(): Uint8Array {
-    return this.memory.getArray(Uint8Array, this.instance.exportDataSection(this.parser.module));
+    return this.getByteArray(<number> <unknown>this.instance.exportDataSection(this.parser.module));
   }
 
   hasStart(): boolean {
@@ -128,8 +99,8 @@ function base64_decode(string: string): Uint8Array {
   var length = string.length;
   if (length) {
     let n = 0,
-        p = length;
-    while (--p % 4 > 1 && string.charCodeAt(p) === 61) ++n;
+      p = length;
+    while (--p % 4 > 1 && string.charCodeAt(p) === 61)++n;
     length = Math.ceil(length * 3) / 4 - n;
   }
   var buffer = new Uint8Array(length);

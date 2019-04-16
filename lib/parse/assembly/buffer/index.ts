@@ -79,7 +79,7 @@ export class Buffer {
   }
 
   readVarint8(size: u32): i8 {
-    return changetype<i8>(this.readVarint(size));
+    return <i8>this.readVarint(size);
   }
 
   /** Reads a LEB128-encoded signed 64-bit integer from memory. */

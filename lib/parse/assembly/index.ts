@@ -2,13 +2,7 @@
 
 // Common constants shared between AssemblyScript and TypeScript
 import {
-  Type,
-  SectionId,
-  ExternalKind,
-  NameType,
-  MAX_PAGES,
-  MAX_ELEMS,
-  Opcode
+  SectionId
 } from "../src/common";
 
 export { memory }
@@ -20,30 +14,30 @@ import {
 } from "./module";
 
 
-export function getType(m: Module): string {
-  var type = m.getType();
-  if (type == null) {
-    return "No Type Section"
-  }
-  return type.toString();
-}
-
-export function getImports(m: Module): void {
-  var _import = m.getImports();
-
-  // log(imports.length);
-  if (_import != null) {
-    // for (let i = 0; i < imports.length; i++) {
-    //
-    //   // log(imports.length);
-    //   // for (let j = 0; i< imports[i].imports.length; j++){
-    //   //   let _import = imports[i].imports[j];
-    //   //   log(_import.toString())
-    //   // }
-    // }
-  }
-  // return
-}
+// export function getType(m: Module): string {
+//   var type = m.getType();
+//   if (type == null) {
+//     return "No Type Section"
+//   }
+//   return type.toString();
+// }
+//
+// export function getImports(m: Module): void {
+//   var _import = m.getImports();
+//
+//   // log(imports.length);
+//   if (_import != null) {
+//     // for (let i = 0; i < imports.length; i++) {
+//     //
+//     //   // log(imports.length);
+//     //   // for (let j = 0; i< imports[i].imports.length; j++){
+//     //   //   let _import = imports[i].imports[j];
+//     //   //   log(_import.toString())
+//     //   // }
+//     // }
+//   }
+//   // return
+// }
 
 export function removeSection(mod: Module, id: SectionId): Uint8Array {
   var section = mod.getID(id);
@@ -73,6 +67,10 @@ export function removeSection(mod: Module, id: SectionId): Uint8Array {
 
 export function removeStartFunction (mod: Module):  Uint8Array {
   return removeSection(mod, SectionId.Start);
+}
+
+export function removeDataSection(mod: Module): Uint8Array {
+  return removeSection(mod, SectionId.Data)
 }
 
 //Most Also include Memory Section
@@ -115,15 +113,15 @@ export function hasStart(mod: Module): boolean {
   return mod.hasStart;
 }
 
-export class Parser {
+class Parser {
   buf: Buffer;
-  module: Module;
+  public module: Module;
   constructor(binary: Uint8Array){
    this.buf = new Buffer(binary);
    this.module = new Module(this.buf);
  }
 
- parseString(): String {
+ private parseString(): String {
    return String.fromUTF8(this.buf.off, this.buf.readVaruint(32));
  }
 
@@ -170,4 +168,4 @@ export class Parser {
 
 }
 
-export {TypeSection, Module}
+export {Parser, Module}

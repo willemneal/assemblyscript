@@ -1,4 +1,4 @@
-import {log} from "../../assembly/host";
+import {log} from "../../../host/assembly";
 import "allocator/arena";
 export {memory}
 
