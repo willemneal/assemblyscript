@@ -1,4 +1,4 @@
-import {ASInstance, ASMemory, ASTable} from "../../loader"
+import {ASInstance, ASMemory, ASTable} from "../../loader/lib"
 
 export abstract class ASImport {
   public instance!: ASInstance;
