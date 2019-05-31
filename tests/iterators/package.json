@@ -1,0 +1,14 @@
+{
+  "name": "iterators-test",
+  "version": "1.0.0",
+  "description": "Test for iterators in assemblyscript",
+  "main": "index.js",
+  "scripts": {
+    "test": "asp"
+  },
+  "author": "Willem Wyndham ",
+  "license": "MIT",
+  "dependencies": {
+    "as-pect": "github:jtenner/as-pect#7e16908873bb8fe207e3f2561c97245d7d393f10"
+  }
+}
