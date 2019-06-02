@@ -447,7 +447,7 @@ export class Compiler {
         return callback(Error("Parse error"));
       }
     }
-
+    let entries = [];
     // Include entry files
     for (let i = 0, k = argv.length; i < k; ++i) {
       const filename = argv[i];
@@ -470,6 +470,7 @@ export class Compiler {
       stats.parseCount++;
       stats.parseTime += measure(() => {
         this.parseFile(sourceText, sourcePath, true);
+        entries.push(sourcePath.replace(/\.ts/, ""));
       });
       let code = parseBacklog();
       if (code) return code;
@@ -482,9 +483,14 @@ export class Compiler {
     }
     //Copy parser
     let parser: Parser = new assemblyscript.Parser();
+    // let entries = this.parser.program.sources.filter((source) => source.isEntry);
     parser.program.sources = this.parser.program.sources.filter((source) => !source.isEntry);
     parser.seenlog = new Set(this.parser.seenlog.values());
     parser.donelog = new Set(this.parser.donelog.values());
+    entries.forEach((source) => {
+      parser.seenlog.delete(source);
+      parser.donelog.delete(source);
+    })
     parser.onComment = this.parser.onComment;
 
     // Finish parsing
@@ -974,7 +980,7 @@ export function createMemoryStream(fn?) {
 const compiler = new Compiler();
 
 const main = compiler.main;
-
+main.bind(compiler);
 export { main }
 
 
