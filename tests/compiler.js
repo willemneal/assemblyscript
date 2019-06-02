@@ -6,7 +6,7 @@ const glob = require("glob");
 const colorsUtil = require("../cli/util/colors");
 const optionsUtil = require("../cli/util/options");
 const diff = require("./util/diff");
-const asc = require("../cli/asc.js");
+const asc = require("../dist/asc.js");
 
 const config = {
   "create": {

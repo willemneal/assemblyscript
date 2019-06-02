@@ -42,6 +42,8 @@
   },
   "scripts": {
     "build": "webpack --mode production --display-modules",
+    "build:frontend": "tsc -p ./frontend/tsconfig.json",
+    "test:frontend": "npm run build:frontend && npm run test:compiler",
     "clean": "node scripts/clean",
     "check": "npm run check:config && npm run check:compiler && npm run check:library",
     "check:config": "tsc --noEmit -p src --diagnostics --listFiles",

@@ -1,0 +1,17 @@
+{
+  "include": [
+    "./asc.ts"
+  ],
+  "exclude": [
+    "../node_modules/**/*",
+    "./options.ts"
+  ],
+  "compilerOptions": {
+    "target": "es6",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "allowJs": false,
+    "outDir": "../dist"
+  }
+}
