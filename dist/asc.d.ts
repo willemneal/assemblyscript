@@ -35,7 +35,6 @@ export declare const definitionFiles: {
 /** Convenience function that parses and compiles source strings directly. */
 export declare function compileString(sources: any, options: any): any;
 interface Source {
-    internalName: string;
     isEntry: boolean;
 }
 interface Program {

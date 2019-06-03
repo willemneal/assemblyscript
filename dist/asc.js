@@ -438,8 +438,8 @@ class Compiler {
         let parser = new assemblyscript.Parser();
         // let entries = this.parser.program.sources.filter((source) => source.isEntry);
         parser.program.sources = this.parser.program.sources.filter((source) => !source.isEntry);
-        parser.seenlog = new Set(this.parser.seenlog.values());
-        parser.donelog = new Set(this.parser.donelog.values());
+        parser.seenlog = this.parser.seenlog;
+        parser.donelog = this.parser.donelog;
         entries.forEach((source) => {
             parser.seenlog.delete(source);
             parser.donelog.delete(source);

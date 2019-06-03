@@ -342,9 +342,9 @@ export class Parser extends DiagnosticEmitter {
   /** Finishes parsing and returns the program. */
   finish(): Program {
     if (this.backlog.length) throw new Error("backlog is not empty");
-    this.backlog = [];
-    this.seenlog.clear();
-    this.donelog.clear();
+    // this.backlog = [];
+    // this.seenlog.clear();
+    // this.donelog.clear();
     return this.program;
   }
 
