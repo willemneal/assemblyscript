@@ -29,7 +29,7 @@ const utf8 = __importStar(require("@protobufjs/utf8"));
 const colors_1 = __importDefault(require("../cli/util/colors"));
 const optionsUtil = __importStar(require("./options"));
 const mkdirp_1 = __importDefault(require("../cli/util/mkdirp"));
-const EOL = (() => process.platform === "win32" ? "\r\n" : "\n")();
+const EOL = (() => (process.platform === "win32" ? "\r\n" : "\n"))();
 // Emscripten adds an `uncaughtException` listener to Binaryen that results in an additional
 // useless code fragment on top of an actual error. suppress this:
 if (process.removeAllListeners)
@@ -55,18 +55,20 @@ exports.defaultOptimizeLevel = 2;
 exports.defaultShrinkLevel = 1;
 /** Bundled library files. */
 exports.libraryFiles = (() => {
+    // set up if not a bundle
     const libDir = path.join(__dirname, "..", "std", "assembly");
     let libFiles = glob.sync("**/!(*.d).ts", { cwd: libDir });
     const bundled = {};
-    libFiles.forEach(file => bundled[file.replace(/\.ts$/, "")] = fs.readFileSync(path.join(libDir, file), "utf8"));
+    libFiles.forEach(file => (bundled[file.replace(/\.ts$/, "")] = fs.readFileSync(path.join(libDir, file), "utf8")));
     return bundled;
 })();
 /** Bundled definition files. */
 exports.definitionFiles = (() => {
+    // set up if not a bundle
     const stdDir = path.join(__dirname, "..", "std");
     return {
-        "assembly": fs.readFileSync(path.join(stdDir, "assembly", "index.d.ts"), "utf8"),
-        "portable": fs.readFileSync(path.join(stdDir, "portable", "index.d.ts"), "utf8")
+        assembly: fs.readFileSync(path.join(stdDir, "assembly", "index.d.ts"), "utf8"),
+        portable: fs.readFileSync(path.join(stdDir, "portable", "index.d.ts"), "utf8")
     };
 })();
 /** Convenience function that parses and compiles source strings directly. */
@@ -77,10 +79,7 @@ function compileString(sources, options) {
         stdout: createMemoryStream(),
         stderr: createMemoryStream()
     });
-    var argv = [
-        "--binaryFile", "binary",
-        "--textFile", "text",
-    ];
+    var argv = ["--binaryFile", "binary", "--textFile", "text"];
     Object.keys(options || {}).forEach(key => {
         var val = options[key];
         if (Array.isArray(val))
@@ -89,11 +88,11 @@ function compileString(sources, options) {
             argv.push("--" + key, String(val));
     });
     let compiler = new Compiler();
-    compiler.main(argv.concat(Object.keys(sources)), {
+    compiler._main(argv.concat(Object.keys(sources)), {
         stdout: output.stdout,
         stderr: output.stderr,
-        readFile: name => sources.hasOwnProperty(name) ? sources[name] : null,
-        writeFile: (name, contents) => output[name] = contents,
+        readFile: name => (sources.hasOwnProperty(name) ? sources[name] : null),
+        writeFile: (name, contents) => (output[name] = contents),
         listFiles: () => []
     });
     return output;
@@ -138,6 +137,12 @@ class Compiler {
         this.parser = null;
         this.stdlibLoaded = false;
     }
+    static main(argv, options, callback) {
+        if (!this.singleton) {
+            this.singleton = new Compiler();
+        }
+        this.singleton._main(argv, options, callback);
+    }
     parseFile(text, path, isEntry = false) {
         this.parser = assemblyscript.parseFile(text, path, isEntry, this.parser);
     }
@@ -145,7 +150,7 @@ class Compiler {
         return this.parser.seenlog.has(path);
     }
     /** Runs the command line utility using the specified arguments array. */
-    main(argv, options, callback) {
+    _main(argv, options, callback) {
         if (typeof options === "function") {
             callback = options;
             options = {};
@@ -169,8 +174,7 @@ class Compiler {
         const args = opts.options;
         argv = opts.arguments;
         if (args.noColors) {
-            colors_1.default.stdout.supported =
-                colors_1.default.stderr.supported = false;
+            colors_1.default.stdout.supported = colors_1.default.stderr.supported = false;
         }
         else {
             colors_1.default.stdout = colors_1.default.from(stdout);
@@ -179,19 +183,28 @@ class Compiler {
         // Check for unknown arguments
         if (opts.unknown.length) {
             opts.unknown.forEach(arg => {
-                stderr.write(colors_1.default.stderr.yellow("WARN: ") + "Unknown option '" + arg + "'" + EOL);
+                stderr.write(colors_1.default.stderr.yellow("WARN: ") +
+                    "Unknown option '" +
+                    arg +
+                    "'" +
+                    EOL);
             });
         }
         // Check for trailing arguments
         if (opts.trailing.length) {
-            stderr.write(colors_1.default.stderr.yellow("WARN: ") + "Unsupported trailing arguments: " + opts.trailing.join(" ") + EOL);
+            stderr.write(colors_1.default.stderr.yellow("WARN: ") +
+                "Unsupported trailing arguments: " +
+                opts.trailing.join(" ") +
+                EOL);
         }
         // Use default callback if none is provided
         if (!callback)
             callback = function defaultCallback(err) {
                 var code = 0;
                 if (err) {
-                    stderr.write(colors_1.default.stderr.red("ERROR: ") + err.stack.replace(/^ERROR: /i, "") + EOL);
+                    stderr.write(colors_1.default.stderr.red("ERROR: ") +
+                        err.stack.replace(/^ERROR: /i, "") +
+                        EOL);
                     code = 1;
                 }
                 return code;
@@ -214,8 +227,10 @@ class Compiler {
                 "  " + color.cyan("asc") + " hello.ts -b hello.wasm -t hello.wat",
                 "  " + color.cyan("asc") + " hello1.ts hello2.ts -b -O > hello.wasm",
                 "",
-                color.white("OPTIONS"),
-            ].concat(optionsUtil.help(options, { indent: 24, eol: EOL })).join(EOL) + EOL);
+                color.white("OPTIONS")
+            ]
+                .concat(optionsUtil.help(options, { indent: 24, eol: EOL }))
+                .join(EOL) + EOL);
             return callback(null);
         }
         // I/O must be specified if not present in the environment
@@ -232,7 +247,7 @@ class Compiler {
         // Set up transforms
         const transforms = [];
         if (args.transform) {
-            (args.transform).forEach(transform => transforms.push(require(path.isAbsolute(transform = transform.trim())
+            args.transform.forEach(transform => transforms.push(require(path.isAbsolute((transform = transform.trim()))
                 ? transform
                 : path.join(process.cwd(), transform))));
         }
@@ -248,7 +263,7 @@ class Compiler {
         let packages = new Map();
         function isPackage(name) {
             for (let _package of packages.keys()) {
-                if ((new RegExp(_package)).test(name)) {
+                if (new RegExp(_package).test(name)) {
                     return true;
                 }
             }
@@ -256,14 +271,17 @@ class Compiler {
         }
         if (args.path) {
             for (let _path of args.path) {
-                let libFiles = glob.sync(`${_path}/**/assembly/index.ts`, { cwd: baseDir });
-                libFiles = libFiles.filter((x) => !(/\/std/.test(x)))
-                    .filter(x => !(/\_\_.*\_\_/.test(x)))
-                    .filter(x => !(/\.d\.ts$/.test(x)));
+                let libFiles = glob.sync(`${_path}/**/assembly/index.ts`, {
+                    cwd: baseDir
+                });
+                libFiles = libFiles
+                    .filter(x => !/\/std/.test(x))
+                    .filter(x => !/\_\_.*\_\_/.test(x))
+                    .filter(x => !/\.d\.ts$/.test(x));
                 libFiles.forEach(file => {
                     let libPath = file.substring(file.lastIndexOf(_path));
                     let regex = new RegExp(`.*${_path}/(.*)\/assembly\/(.*)`);
-                    libPath = libPath.replace(regex, '$1/$2');
+                    libPath = libPath.replace(regex, "$1/$2");
                     packages.set(libPath.substring(0, libPath.indexOf("/")), _path);
                     libPath = libPath.replace(/\.ts$/, "");
                     if (!exports.libraryFiles[libPath]) {
@@ -289,7 +307,8 @@ class Compiler {
                     });
                 });
             }
-            else { // always include builtins
+            else {
+                // always include builtins
                 stats.parseCount++;
                 stats.parseTime += measure(() => {
                     this.parseFile(exports.libraryFiles["builtins"], exports.libraryPrefix + "builtins.ts", false);
@@ -303,7 +322,8 @@ class Compiler {
             if (typeof lib === "string")
                 lib = lib.split(",");
             Array.prototype.push.apply(customLibDirs, lib.map(lib => lib.trim()));
-            for (let i = 0, k = customLibDirs.length; i < k; ++i) { // custom
+            for (let i = 0, k = customLibDirs.length; i < k; ++i) {
+                // custom
                 let libDir = customLibDirs[i];
                 let libFiles;
                 if (libDir.endsWith(".ts")) {
@@ -369,7 +389,7 @@ class Compiler {
                 if (sourceText == null && args.path && isPackage(sourcePath)) {
                     for (let _path of args.path) {
                         console.log(`Looking for ${sourcePath} in ${_path}`);
-                        let realPath = (_p) => _p.replace(/\~lib\/([^/]*)\/(.*)/, `${_path}/$1/assembly/$2`);
+                        let realPath = _p => _p.replace(/\~lib\/([^/]*)\/(.*)/, `${_path}/$1/assembly/$2`);
                         const plainName = sourcePath;
                         const indexName = sourcePath + "/index";
                         sourceText = readFile(realPath(plainName) + ".ts", baseDir);
@@ -404,7 +424,9 @@ class Compiler {
         // Include entry files
         for (let i = 0, k = argv.length; i < k; ++i) {
             const filename = argv[i];
-            let sourcePath = String(filename).replace(/\\/g, "/").replace(/(\.ts|\/)$/, "");
+            let sourcePath = String(filename)
+                .replace(/\\/g, "/")
+                .replace(/(\.ts|\/)$/, "");
             // Try entryPath.ts, then entryPath/index.ts
             let sourceText = readFile(sourcePath + ".ts", baseDir);
             if (sourceText === null) {
@@ -437,10 +459,10 @@ class Compiler {
         //Copy parser
         let parser = new assemblyscript.Parser();
         // let entries = this.parser.program.sources.filter((source) => source.isEntry);
-        parser.program.sources = this.parser.program.sources.filter((source) => !source.isEntry);
+        parser.program.sources = this.parser.program.sources.filter(source => !source.isEntry);
         parser.seenlog = this.parser.seenlog;
         parser.donelog = this.parser.donelog;
-        entries.forEach((source) => {
+        entries.forEach(source => {
             parser.seenlog.delete(source);
             parser.donelog.delete(source);
         });
@@ -603,7 +625,7 @@ class Compiler {
             // Write binary
             if (args.binaryFile != null) {
                 let sourceMapURL = args.sourceMap != null
-                    ? (args.sourceMap).length
+                    ? args.sourceMap.length
                         ? args.sourceMap
                         : path.basename(args.binaryFile) + ".map"
                     : null;
@@ -612,7 +634,7 @@ class Compiler {
                 stats.emitTime += measure(() => {
                     wasm = module.toBinary(sourceMapURL);
                 });
-                if ((args.binaryFile).length) {
+                if (args.binaryFile.length) {
                     writeFile(args.binaryFile, wasm.output, baseDir);
                 }
                 else {
@@ -622,13 +644,15 @@ class Compiler {
                 hasOutput = true;
                 // Post-process source map
                 if (wasm.sourceMap != null) {
-                    if ((args.binaryFile).length) {
+                    if (args.binaryFile.length) {
                         let sourceMap = JSON.parse(wasm.sourceMap);
                         sourceMap.sourceRoot = exports.sourceMapRoot;
                         sourceMap.sources.forEach((name, index) => {
                             let text = null;
                             if (name.startsWith(exports.libraryPrefix)) {
-                                let stdName = name.substring(exports.libraryPrefix.length).replace(/\.ts$/, "");
+                                let stdName = name
+                                    .substring(exports.libraryPrefix.length)
+                                    .replace(/\.ts$/, "");
                                 if (exports.libraryFiles.hasOwnProperty(stdName)) {
                                     text = exports.libraryFiles[stdName];
                                 }
@@ -650,7 +674,9 @@ class Compiler {
                                 sourceMap.sourceContents = [];
                             sourceMap.sourceContents[index] = text;
                         });
-                        writeFile(path.join(path.dirname(args.binaryFile), path.basename(sourceMapURL)).replace(/^\.\//, ""), JSON.stringify(sourceMap), baseDir);
+                        writeFile(path
+                            .join(path.dirname(args.binaryFile), path.basename(sourceMapURL))
+                            .replace(/^\.\//, ""), JSON.stringify(sourceMap), baseDir);
                     }
                     else {
                         stderr.write("Skipped source map (stdout already occupied)" + EOL);
@@ -660,7 +686,7 @@ class Compiler {
             // Write asm.js
             if (args.asmjsFile != null) {
                 let asm;
-                if ((args.asmjsFile).length) {
+                if (args.asmjsFile.length) {
                     stats.emitCount++;
                     stats.emitTime += measure(() => {
                         asm = module.toAsmjs();
@@ -680,7 +706,7 @@ class Compiler {
             // Write WebIDL
             if (args.idlFile != null) {
                 let idl;
-                if ((args.idlFile).length) {
+                if (args.idlFile.length) {
                     stats.emitCount++;
                     stats.emitTime += measure(() => {
                         idl = assemblyscript.buildIDL(program);
@@ -700,7 +726,7 @@ class Compiler {
             // Write TypeScript definition
             if (args.tsdFile != null) {
                 let tsd;
-                if ((args.tsdFile).length) {
+                if (args.tsdFile.length) {
                     stats.emitCount++;
                     stats.emitTime += measure(() => {
                         tsd = assemblyscript.buildTSD(program);
@@ -720,7 +746,7 @@ class Compiler {
             // Write text (must be last)
             if (args.textFile != null || !hasOutput) {
                 let wat;
-                if (args.textFile && (args.textFile).length) {
+                if (args.textFile && args.textFile.length) {
                     stats.emitCount++;
                     stats.emitTime += measure(() => {
                         wat = module.toText();
@@ -765,7 +791,9 @@ class Compiler {
                 stats.writeTime += measure(() => {
                     mkdirp_1.default(path.join(baseDir, path.dirname(filename)));
                     if (typeof contents === "string") {
-                        fs.writeFileSync(path.join(baseDir, filename), contents, { encoding: "utf8" });
+                        fs.writeFileSync(path.join(baseDir, filename), contents, {
+                            encoding: "utf8"
+                        });
                     }
                     else {
                         fs.writeFileSync(path.join(baseDir, filename), contents);
@@ -781,7 +809,9 @@ class Compiler {
             var files;
             try {
                 stats.readTime += measure(() => {
-                    files = fs.readdirSync(path.join(baseDir, dirname)).filter(file => /^(?!.*\.d\.ts$).*\.ts$/.test(file));
+                    files = fs
+                        .readdirSync(path.join(baseDir, dirname))
+                        .filter(file => /^(?!.*\.d\.ts$).*\.ts$/.test(file));
                 });
                 return files;
             }
@@ -813,7 +843,8 @@ function checkDiagnostics(emitter, stderr) {
     while ((diagnostic = assemblyscript.nextDiagnostic(emitter)) != null) {
         if (stderr) {
             stderr.write(assemblyscript.formatDiagnostic(diagnostic, stderr.isTTY, true) +
-                EOL + EOL);
+                EOL +
+                EOL);
         }
         if (assemblyscript.isError(diagnostic))
             hasErrors = true;
@@ -872,7 +903,9 @@ function printStats(stats, output) {
     ].join(EOL) + EOL);
 }
 exports.printStats = printStats;
-var allocBuffer = function (len) { return new Uint8Array(len); };
+var allocBuffer = function (len) {
+    return new Uint8Array(len);
+};
 class MemoryStream {
     constructor(fn) {
         this.fn = fn;
@@ -904,12 +937,10 @@ class MemoryStream {
         }
         return buffer;
     }
-    ;
     toString() {
         var buffer = this.toBuffer();
         return utf8.read(buffer, 0, buffer.length);
     }
-    ;
 }
 exports.MemoryStream = MemoryStream;
 /** Creates a memory stream that can be used in place of stdout/stderr. */
@@ -917,10 +948,10 @@ function createMemoryStream(fn) {
     return new MemoryStream(fn);
 }
 exports.createMemoryStream = createMemoryStream;
-const compiler = new Compiler();
-const main = compiler.main;
+function main(argv, options, callback) {
+    Compiler.main(argv, options, callback);
+}
 exports.main = main;
-main.bind(compiler);
 /** Compatible TypeScript compiler options for syntax highlighting etc. */
 exports.tscOptions = {
     alwaysStrict: true,

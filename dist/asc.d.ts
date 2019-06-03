@@ -29,8 +29,8 @@ export declare const defaultShrinkLevel = 1;
 export declare const libraryFiles: {};
 /** Bundled definition files. */
 export declare const definitionFiles: {
-    "assembly": string;
-    "portable": string;
+    assembly: string;
+    portable: string;
 };
 /** Convenience function that parses and compiles source strings directly. */
 export declare function compileString(sources: any, options: any): any;
@@ -54,12 +54,14 @@ export interface Parser {
     onComment: any | null;
 }
 export declare class Compiler {
+    static singleton: Compiler;
+    static main(argv: any, options: any, callback?: any): void;
     parser: Parser;
     stdlibLoaded: boolean;
     parseFile(text: string, path: string, isEntry?: boolean): void;
     fileSeen(path: string): boolean;
     /** Runs the command line utility using the specified arguments array. */
-    main(argv: any, options: any, callback?: any): any;
+    _main(argv: any, options: any, callback?: any): any;
 }
 /** Checks diagnostics emitted so far for errors. */
 export declare function checkDiagnostics(emitter: any, stderr: any): boolean;
@@ -97,8 +99,7 @@ export declare class MemoryStream {
 }
 /** Creates a memory stream that can be used in place of stdout/stderr. */
 export declare function createMemoryStream(fn?: any): MemoryStream;
-declare const main: (argv: any, options: any, callback?: any) => any;
-export { main };
+export declare function main(argv: any, options: any, callback?: any): void;
 /** Compatible TypeScript compiler options for syntax highlighting etc. */
 export declare const tscOptions: {
     alwaysStrict: boolean;
@@ -114,3 +115,4 @@ export declare const tscOptions: {
     types: any[];
     allowJs: boolean;
 };
+export {};
