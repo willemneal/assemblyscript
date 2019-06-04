@@ -34,7 +34,7 @@ const EOL = (() => (process.platform === "win32" ? "\r\n" : "\n"))();
 // useless code fragment on top of an actual error. suppress this:
 if (process.removeAllListeners)
     process.removeAllListeners("uncaughtException");
-const assemblyscript = __importStar(require("../dist/assemblyscript"));
+let assemblyscript = require("../dist/assemblyscript");
 const glob = __importStar(require("glob"));
 const assert_1 = __importDefault(require("assert"));
 /** Whether this is a webpack bundle or not. */
@@ -50,7 +50,7 @@ exports.sourceMapRoot = "assemblyscript:///";
 /** Prefix used for library files. */
 exports.libraryPrefix = assemblyscript.LIBRARY_PREFIX;
 /** Default Binaryen optimization level. */
-exports.defaultOptimizeLevel = 2;
+exports.defaultOptimizeLevel = 3;
 /** Default Binaryen shrink level. */
 exports.defaultShrinkLevel = 1;
 /** Bundled library files. */
@@ -297,23 +297,14 @@ class Compiler {
         }
         if (!this.stdlibLoaded) {
             // Include library files
-            if (!args.noLib) {
-                Object.keys(exports.libraryFiles).forEach(libPath => {
-                    if (libPath.indexOf("/") >= 0)
-                        return; // in sub-directory: imported on demand
-                    stats.parseCount++;
-                    stats.parseTime += measure(() => {
-                        this.parseFile(exports.libraryFiles[libPath], exports.libraryPrefix + libPath + ".ts", false);
-                    });
-                });
-            }
-            else {
-                // always include builtins
+            Object.keys(exports.libraryFiles).forEach(libPath => {
+                if (libPath.indexOf("/") >= 0)
+                    return; // in sub-directory: imported on demand
                 stats.parseCount++;
                 stats.parseTime += measure(() => {
-                    this.parseFile(exports.libraryFiles["builtins"], exports.libraryPrefix + "builtins.ts", false);
+                    this.parseFile(exports.libraryFiles[libPath], exports.libraryPrefix + libPath + ".ts", false);
                 });
-            }
+            });
             this.stdlibLoaded = true;
         }
         const customLibDirs = [];
@@ -350,6 +341,7 @@ class Compiler {
         const parseBacklog = () => {
             var sourcePath, sourceText;
             while ((sourcePath = this.parser.nextFile()) != null) {
+                sourceText = null;
                 let untounched = sourcePath;
                 // Load library file if explicitly requested
                 if (sourcePath.startsWith(exports.libraryPrefix)) {
@@ -420,6 +412,26 @@ class Compiler {
                 return callback(Error("Parse error"));
             }
         };
+        // Include runtime template before entry files so its setup runs first
+        {
+            let runtimeName = String(args.runtime);
+            let runtimePath = "rt/index-" + runtimeName;
+            let runtimeText = exports.libraryFiles[runtimePath];
+            if (runtimeText == null) {
+                runtimePath = runtimeName;
+                runtimeText = readFile(runtimePath + ".ts", baseDir);
+                if (runtimeText == null) {
+                    return callback(Error("Runtime '" + runtimeName + "' not found."));
+                }
+            }
+            else {
+                runtimePath = "~lib/" + runtimePath;
+            }
+            stats.parseCount++;
+            stats.parseTime += measure(() => {
+                this.parseFile(runtimeText, runtimePath, true);
+            });
+        }
         let entries = [];
         // Include entry files
         for (let i = 0, k = argv.length; i < k; ++i) {
@@ -494,13 +506,11 @@ class Compiler {
         assemblyscript.setMemoryBase(compilerOptions, args.memoryBase >>> 0);
         assemblyscript.setSourceMap(compilerOptions, args.sourceMap != null);
         assemblyscript.setOptimizeLevelHints(compilerOptions, optimizeLevel, shrinkLevel);
-        if (!args.noLib) {
-            // Initialize default aliases
-            assemblyscript.setGlobalAlias(compilerOptions, "Math", "NativeMath");
-            assemblyscript.setGlobalAlias(compilerOptions, "Mathf", "NativeMathf");
-            assemblyscript.setGlobalAlias(compilerOptions, "abort", "~lib/env/abort");
-            assemblyscript.setGlobalAlias(compilerOptions, "trace", "~lib/env/trace");
-        }
+        // Initialize default aliases
+        assemblyscript.setGlobalAlias(compilerOptions, "Math", "NativeMath");
+        assemblyscript.setGlobalAlias(compilerOptions, "Mathf", "NativeMathf");
+        assemblyscript.setGlobalAlias(compilerOptions, "abort", "~lib/builtins/abort");
+        assemblyscript.setGlobalAlias(compilerOptions, "trace", "~lib/builtins/trace");
         // Add or override aliases if specified
         if (args.use) {
             let aliases = args.use;
@@ -531,16 +541,14 @@ class Compiler {
         }
         var module;
         stats.compileCount++;
-        (() => {
-            try {
-                stats.compileTime += measure(() => {
-                    module = assemblyscript.compileProgram(program, compilerOptions);
-                });
-            }
-            catch (e) {
-                return callback(e);
-            }
-        })();
+        try {
+            stats.compileTime += measure(() => {
+                module = assemblyscript.compileProgram(program, compilerOptions);
+            });
+        }
+        catch (e) {
+            return callback(e);
+        }
         if (checkDiagnostics(this.parser, stderr)) {
             if (module)
                 module.dispose();
@@ -765,9 +773,11 @@ class Compiler {
         module.dispose();
         // this.parser.program.filesByName = new Map()
         this.parser = parser;
-        debugger;
         if (args.measure) {
             printStats(stats, stderr);
+        }
+        if (args.printrtti) {
+            printRTTI(program, stderr);
         }
         return callback(null);
         function readFileNode(filename, baseDir) {
@@ -903,6 +913,13 @@ function printStats(stats, output) {
     ].join(EOL) + EOL);
 }
 exports.printStats = printStats;
+/** Prints runtime type information. */
+function printRTTI(program, output) {
+    if (!output)
+        output = process.stderr;
+    output.write("# Runtime type information (RTTI)\n");
+    output.write(assemblyscript.buildRTTI(program));
+}
 var allocBuffer = function (len) {
     return new Uint8Array(len);
 };

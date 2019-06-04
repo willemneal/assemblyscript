@@ -22,7 +22,7 @@ export declare const sourceMapRoot = "assemblyscript:///";
 /** Prefix used for library files. */
 export declare const libraryPrefix: any;
 /** Default Binaryen optimization level. */
-export declare const defaultOptimizeLevel = 2;
+export declare const defaultOptimizeLevel = 3;
 /** Default Binaryen shrink level. */
 export declare const defaultShrinkLevel = 1;
 /** Bundled library files. */
@@ -55,9 +55,9 @@ export interface Parser {
 }
 export declare class Compiler {
     static singleton: Compiler;
-    static main(argv: any, options: any, callback?: any): void;
     parser: Parser;
     stdlibLoaded: boolean;
+    static main(argv: any, options: any, callback?: any): void;
     parseFile(text: string, path: string, isEntry?: boolean): void;
     fileSeen(path: string): boolean;
     /** Runs the command line utility using the specified arguments array. */

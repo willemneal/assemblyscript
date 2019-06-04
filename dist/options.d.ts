@@ -159,4 +159,16 @@ export interface Options {
      * or defaults to having an '/assembly' folder
      */
     path: string[];
+    /** Prints the module's runtime type information to stderr. */
+    printrtti: boolean;
+    /**
+     * Specifies the runtime implementation to include in the program.
+     *
+     *  full  Default runtime based on TLSF and reference counting.
+     *  half  Same as 'full', but not exported to the host.
+     *  stub  Minimal stub implementation without free/GC support.
+     *  none  Same as 'stub', but not exported to the host.
+     *
+     * */
+    runtime: "full" | "half" | "stub" | "none";
 }

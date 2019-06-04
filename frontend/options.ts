@@ -1,29 +1,34 @@
-
 import * as optionsUtil from "../cli/util/options";
 
-export const parse: (argv: string[], config: optionsUtil.Config) => Result = optionsUtil.parse as any;
-export const help: (config: Options, options?: optionsUtil.HelpOptions) => string = optionsUtil.help as any;
+export const parse: (
+  argv: string[],
+  config: optionsUtil.Config
+) => Result = optionsUtil.parse as any;
+export const help: (
+  config: Options,
+  options?: optionsUtil.HelpOptions
+) => string = optionsUtil.help as any;
 /** Parsing result. */
 export interface Result {
   /** Parsed options. */
-  options: Options,
+  options: Options;
   /** Unknown options. */
-  unknown: string[],
+  unknown: string[];
   /** Normal arguments. */
-  arguments: string[],
+  arguments: string[];
   /** Trailing arguments. */
-  trailing: string[]
+  trailing: string[];
 }
 
 export interface Options {
   /**
    *  Prints just the compiler's version and exits
    */
-  version: boolean,
+  version: boolean;
   /**
    * Prints this message and exits.
    */
-  help: boolean,
+  help: boolean;
   /**
    * Optimizes the module. Also has the usual shorthands:
    *  -O     Uses defaults. Equivalent to -O2s
@@ -34,94 +39,94 @@ export interface Options {
    * -Oz    Equivalent to -O but with --shrinkLevel 2
    * -O3s   Equivalent to -O3 with --shrinkLevel 1 etc.
    */
-  optimize: boolean,
+  optimize: boolean;
   /**
    * How much to focus on optimizing code. [0-3]
    */
-  optimizeLevel: number,
+  optimizeLevel: number;
   /**
    * How much to focus on shrinking code size. [0-2, s=1, z=2]
    */
-  shrinkLevel: number,
+  shrinkLevel: number;
   /**
    * Validates the module using Binaryen. Exits if invalid.
    */
-  validate: boolean,
+  validate: boolean;
   /**
    * Specifies the base directory of input and output files.
    */
-  baseDir: string,
+  baseDir: string;
   /**
    * Specifies the output file. File extension indicates format.
    */
-  outFile: string,
+  outFile: string;
   /**
    * Specifies the binary output file (.wasm).
    */
-  binaryFile: string,
+  binaryFile: string;
   /**
    * Specifies the text output file (.wat).
    */
-  textFile: string,
+  textFile: string;
   /**
    * Specifies the asm.js output file (.js).
    */
-  asmjsFile: string,
+  asmjsFile: string;
   /**
    * Specifies the WebIDL output file (.webidl).
    */
-  idlFile: string,
+  idlFile: string;
   /**
    * Specifies the TypeScript definition output file (.d.ts).
    */
-  tsdFile: string,
+  tsdFile: string;
   /**
    * Enables source map generation. Optionally takes the URL
    * used to reference the source map from the binary file
    */
-  sourceMap: string,
+  sourceMap: string;
   /**
    * Enables debug information in emitted binaries.
    */
-  debug: boolean,
+  debug: boolean;
   /**
    * Replaces assertions with just their value without trapping.
    */
-  noAssert: boolean,
+  noAssert: boolean;
   /**
    * Performs compilation as usual but does not emit code.
    */
-  noEmit: boolean,
+  noEmit: boolean;
   /**
    * Imports the memory instance provided by the embedder.
    */
-  importMemory: boolean,
+  importMemory: boolean;
   /**
    * Declare memory as shared by settings the max shared memory.
    */
-  sharedMemory: number,
+  sharedMemory: number;
   /**
    * Sets the start offset of compiler-generated static memory.
    */
-  memoryBase: number,
+  memoryBase: number;
   /**
    * Imports the function table instance provided by the embedder.
    */
-  importTable: boolean,
+  importTable: boolean;
   /**
    * Does not include the shipped standard library.
    */
-  noLib: boolean,
+  noLib: boolean;
   /**
    * Adds one or multiple paths to custom library components and
    * uses exports of all top-level files at this path as globals.
    */
-  lib: string | string[],
+  lib: string | string[];
   /**
    * Aliases a global object under another name, e.g., to switch
    * the default 'Math' implementation used: --use Math=JSMath
    */
-  use: string[],
+  use: string[];
   /**
    * Sets the trap mode to use.
    *
@@ -129,12 +134,12 @@ export interface Options {
    * "clamp"  Replace trapping operations with clamping semantics.
    * "js"     Replace trapping operations with JS semantics.
    */
-  trapMode:"allow" | "clamp" | "js",
+  trapMode: "allow" | "clamp" | "js";
   /**
    * Specifies additional Binaryen passes to run after other
    * optimizations, if any. See: Binaryen/src/passes/pass.cpp
    */
-  runPasses: string | string[],
+  runPasses: string | string[];
   /**
    * Enables additional (experimental) WebAssembly features.
    * sign-extension  Enables sign-extension operations.
@@ -143,19 +148,19 @@ export interface Options {
    * simd            Enables SIMD types and operations.
    * threads         Enables threading and atomic. operations.
    */
-  enable: string | string[],
+  enable: string | string[];
   /**
    * Specifies the path to a custom transform to 'require'.
    */
-  transform: string[],
+  transform: string[];
   /**
    * Prints measuring information on I/O and compile times.
    */
-  measure: boolean,
+  measure: boolean;
   /**
    * Disables terminal colors.
    */
-  noColors: boolean,
+  noColors: boolean;
   // "-Os": { "value": { "optimize": true, "shrinkLevel": 1 } },
   // "-Oz": { "value": { "optimize": true, "shrinkLevel": 2 } },
   // "-O0": { "value": { "optimizeLevel": 0, "shrinkLevel": 0 } },
@@ -175,6 +180,17 @@ export interface Options {
    * Looks for folders with package.json that includes a 'ascMain' field"
    * or defaults to having an '/assembly' folder
    */
-  path: string[]
-
+  path: string[];
+  /** Prints the module's runtime type information to stderr. */
+  printrtti: boolean;
+  /**
+   * Specifies the runtime implementation to include in the program.
+   *
+   *  full  Default runtime based on TLSF and reference counting.
+   *  half  Same as 'full', but not exported to the host.
+   *  stub  Minimal stub implementation without free/GC support.
+   *  none  Same as 'stub', but not exported to the host.
+   *
+   * */
+  runtime: "full" | "half" | "stub" | "none";
 }
