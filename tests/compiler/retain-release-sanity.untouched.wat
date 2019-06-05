@@ -3223,7 +3223,6 @@
   local.get $0
  )
  (func $~lib/array/Array<i32>#constructor (; 27 ;) (type $FUNCSIG$iii) (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
   local.get $0
   if (result i32)
    local.get $0
@@ -3236,7 +3235,6 @@
   local.get $1
   i32.const 2
   call $~lib/arraybuffer/ArrayBufferView#constructor
-  local.tee $2
   local.set $0
   local.get $0
   i32.const 0
@@ -3784,7 +3782,7 @@
   if
    i32.const 424
    i32.const 376
-   i32.const 266
+   i32.const 287
    i32.const 20
    call $~lib/builtins/abort
    unreachable
@@ -3806,7 +3804,6 @@
   local.get $2
  )
  (func $~lib/array/Array<~lib/array/Array<~lib/string/String>>#constructor (; 34 ;) (type $FUNCSIG$iii) (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
   local.get $0
   if (result i32)
    local.get $0
@@ -3819,24 +3816,17 @@
   local.get $1
   i32.const 2
   call $~lib/arraybuffer/ArrayBufferView#constructor
-  local.tee $2
   local.set $0
   local.get $0
   i32.const 0
   i32.store offset=12
   local.get $1
   if
-   local.get $2
-   call $~lib/rt/pure/__release
-   block
-    i32.const 472
-    i32.const 376
-    i32.const 56
-    i32.const 20
-    call $~lib/builtins/abort
-    unreachable
-    unreachable
-   end
+   i32.const 472
+   i32.const 376
+   i32.const 56
+   i32.const 20
+   call $~lib/builtins/abort
    unreachable
   end
   local.get $0
@@ -3845,7 +3835,6 @@
   local.get $0
  )
  (func $~lib/array/Array<~lib/string/String>#constructor (; 35 ;) (type $FUNCSIG$iii) (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
   local.get $0
   if (result i32)
    local.get $0
@@ -3858,24 +3847,17 @@
   local.get $1
   i32.const 2
   call $~lib/arraybuffer/ArrayBufferView#constructor
-  local.tee $2
   local.set $0
   local.get $0
   i32.const 0
   i32.store offset=12
   local.get $1
   if
-   local.get $2
-   call $~lib/rt/pure/__release
-   block
-    i32.const 472
-    i32.const 376
-    i32.const 56
-    i32.const 20
-    call $~lib/builtins/abort
-    unreachable
-    unreachable
-   end
+   i32.const 472
+   i32.const 376
+   i32.const 56
+   i32.const 20
+   call $~lib/builtins/abort
    unreachable
   end
   local.get $0
@@ -3887,7 +3869,6 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  (local $5 i32)
   local.get $1
   call $~lib/rt/pure/__retain
   drop
@@ -3908,29 +3889,17 @@
   i32.const 2
   i32.shl
   i32.add
-  local.set $4
-  local.get $4
-  i32.load
-  local.set $5
   local.get $1
-  local.get $5
-  i32.ne
-  if
-   local.get $4
-   local.get $1
-   call $~lib/rt/pure/__retain
-   i32.store
-   local.get $5
-   call $~lib/rt/pure/__release
-  end
+  call $~lib/rt/pure/__retain
+  i32.store
   local.get $0
   local.get $3
   i32.store offset=12
   local.get $3
-  local.set $5
+  local.set $4
   local.get $1
   call $~lib/rt/pure/__release
-  local.get $5
+  local.get $4
  )
  (func $~lib/string/String#get:length (; 37 ;) (type $FUNCSIG$ii) (param $0 i32) (result i32)
   local.get $0
@@ -4746,7 +4715,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -4782,7 +4753,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0

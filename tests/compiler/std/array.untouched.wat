@@ -3693,7 +3693,6 @@
   local.get $0
  )
  (func $~lib/array/Array<i32>#constructor (; 33 ;) (type $FUNCSIG$iii) (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
   local.get $0
   if (result i32)
    local.get $0
@@ -3706,7 +3705,6 @@
   local.get $1
   i32.const 2
   call $~lib/arraybuffer/ArrayBufferView#constructor
-  local.tee $2
   local.set $0
   local.get $0
   i32.const 0
@@ -3783,7 +3781,6 @@
   local.get $1
  )
  (func $~lib/typedarray/Uint8Array#constructor (; 38 ;) (type $FUNCSIG$iii) (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
   local.get $0
   if (result i32)
    local.get $0
@@ -3796,7 +3793,6 @@
   local.get $1
   i32.const 0
   call $~lib/arraybuffer/ArrayBufferView#constructor
-  local.tee $2
   local.set $0
   local.get $0
  )
@@ -4247,7 +4243,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -4452,7 +4448,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -4860,7 +4856,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -4881,7 +4877,7 @@
   if
    i32.const 872
    i32.const 488
-   i32.const 266
+   i32.const 287
    i32.const 20
    call $~lib/builtins/abort
    unreachable
@@ -4937,7 +4933,7 @@
    block
     i32.const 272
     i32.const 488
-    i32.const 213
+    i32.const 217
     i32.const 59
     call $~lib/builtins/abort
     unreachable
@@ -5091,79 +5087,20 @@
   i32.lt_s
   select
   local.set $11
-  local.get $9
+  local.get $4
   local.get $8
-  i32.lt_s
-  if (result i32)
-   local.get $8
-   local.get $9
-   local.get $11
-   i32.add
-   i32.lt_s
-  else   
-   i32.const 0
-  end
-  if
-   local.get $9
-   local.get $11
-   i32.const 1
-   i32.sub
-   i32.add
-   local.set $9
-   local.get $8
-   local.get $11
-   i32.const 1
-   i32.sub
-   i32.add
-   local.set $8
-   block $break|0
-    loop $continue|0
-     local.get $11
-     if
-      local.get $4
-      local.get $8
-      i32.const 2
-      i32.shl
-      i32.add
-      local.get $4
-      local.get $9
-      i32.const 2
-      i32.shl
-      i32.add
-      i32.load
-      i32.store
-      local.get $9
-      i32.const 1
-      i32.sub
-      local.set $9
-      local.get $8
-      i32.const 1
-      i32.sub
-      local.set $8
-      local.get $11
-      i32.const 1
-      i32.sub
-      local.set $11
-      br $continue|0
-     end
-    end
-   end
-  else   
-   local.get $4
-   local.get $8
-   i32.const 2
-   i32.shl
-   i32.add
-   local.get $4
-   local.get $9
-   i32.const 2
-   i32.shl
-   i32.add
-   local.get $11
-   i32.const 2
-   i32.shl
-   call $~lib/memory/memory.copy
-  end
+  i32.const 2
+  i32.shl
+  i32.add
+  local.get $4
+  local.get $9
+  i32.const 2
+  i32.shl
+  i32.add
+  local.get $11
+  i32.const 2
+  i32.shl
+  call $~lib/memory/memory.copy
   local.get $0
   call $~lib/rt/pure/__retain
  )
@@ -5300,7 +5237,7 @@
   if
    i32.const 872
    i32.const 488
-   i32.const 327
+   i32.const 348
    i32.const 20
    call $~lib/builtins/abort
    unreachable
@@ -6341,7 +6278,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -8292,7 +8229,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -9743,7 +9680,7 @@
    block
     i32.const 4040
     i32.const 488
-    i32.const 112
+    i32.const 121
     i32.const 38
     call $~lib/builtins/abort
     unreachable
@@ -10037,7 +9974,7 @@
   if
    i32.const 4040
    i32.const 488
-   i32.const 97
+   i32.const 106
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -10051,7 +9988,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -10250,7 +10187,7 @@
    block
     i32.const 4040
     i32.const 488
-    i32.const 112
+    i32.const 121
     i32.const 38
     call $~lib/builtins/abort
     unreachable
@@ -10538,7 +10475,7 @@
   if
    i32.const 4040
    i32.const 488
-   i32.const 97
+   i32.const 106
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -10552,7 +10489,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -10857,7 +10794,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -11636,7 +11573,7 @@
    block
     i32.const 4040
     i32.const 488
-    i32.const 112
+    i32.const 121
     i32.const 38
     call $~lib/builtins/abort
     unreachable
@@ -11902,7 +11839,7 @@
   if
    i32.const 4040
    i32.const 488
-   i32.const 97
+   i32.const 106
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -11916,7 +11853,7 @@
   if
    i32.const 176
    i32.const 488
-   i32.const 100
+   i32.const 109
    i32.const 61
    call $~lib/builtins/abort
    unreachable
@@ -24190,7 +24127,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -24226,7 +24165,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -24262,7 +24203,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -24298,7 +24241,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -24343,7 +24288,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -24388,7 +24335,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -24424,7 +24373,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
@@ -24460,7 +24411,9 @@
   local.set $2
   local.get $2
   local.get $0
-  i32.load offset=8
+  i32.load offset=12
+  i32.const 2
+  i32.shl
   i32.add
   local.set $3
   block $break|0
