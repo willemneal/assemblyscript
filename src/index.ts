@@ -1,19 +1,26 @@
 /**
  * Low-level C-like compiler API.
  * @module index
- *//***/
+ */ /***/
 
 import { Target, Feature } from "./common";
 import { Compiler, Options } from "./compiler";
 import { Decompiler } from "./decompiler";
 import { IDLBuilder, TSDBuilder } from "./definitions";
-import { DiagnosticMessage, DiagnosticCategory, formatDiagnosticMessage } from "./diagnostics";
+import {
+  DiagnosticMessage,
+  DiagnosticCategory,
+  formatDiagnosticMessage
+} from "./diagnostics";
 import { Module } from "./module";
 import { Parser } from "./parser";
 import { Program } from "./program";
 
 /** Parses a source file. If `parser` has been omitted a new one is created. */
-export function parseFile(text: string, path: string, isEntry: bool = false,
+export function parseFile(
+  text: string,
+  path: string,
+  isEntry: bool = false,
   parser: Parser | null = null
 ): Parser {
   if (!parser) parser = new Parser();
@@ -93,7 +100,11 @@ export function setMemoryBase(options: Options, memoryBase: u32): void {
 }
 
 /** Sets a 'globalAliases' value. */
-export function setGlobalAlias(options: Options, name: string, alias: string): void {
+export function setGlobalAlias(
+  options: Options,
+  name: string,
+  alias: string
+): void {
   var globalAliases = options.globalAliases;
   if (!globalAliases) options.globalAliases = globalAliases = new Map();
   globalAliases.set(name, alias);
@@ -116,7 +127,11 @@ export function enableFeature(options: Options, feature: Feature): void {
 }
 
 /** Gives the compiler a hint at the optimize levels that will be used later on. */
-export function setOptimizeLevelHints(options: Options, optimizeLevel: i32, shrinkLevel: i32): void {
+export function setOptimizeLevelHints(
+  options: Options,
+  optimizeLevel: i32,
+  shrinkLevel: i32
+): void {
   options.optimizeLevelHint = optimizeLevel;
   options.shrinkLevelHint = shrinkLevel;
 }
@@ -127,8 +142,12 @@ export function finishParsing(parser: Parser): Program {
 }
 
 /** Compiles the sources computed by the parser to a module. */
-export function compileProgram(program: Program, options: Options | null = null): Module {
-  return new Compiler(program, options).compile();
+export function compileProgram(
+  program: Program,
+  options: Options | null = null,
+  _module: Uint8Array | null = null
+): Module {
+  return new Compiler(program, options, _module).compile();
 }
 
 /** Decompiles a module to its (low level) source. */
@@ -151,20 +170,20 @@ export function buildTSD(program: Program): string {
 /** Builds a JSON file of a program's runtime type information. */
 export function buildRTTI(program: Program): string {
   var sb = new Array<string>();
-  sb.push("{\n  \"names\": [\n");
+  sb.push('{\n  "names": [\n');
   for (let cls of program.managedClasses.values()) {
-    sb.push("    \"");
+    sb.push('    "');
     sb.push(cls.internalName);
-    sb.push("\",\n");
+    sb.push('",\n');
   }
-  sb.push("  ],\n  \"base\": [\n");
+  sb.push('  ],\n  "base": [\n');
   for (let cls of program.managedClasses.values()) {
     let base = cls.base;
     sb.push("    ");
     sb.push(base ? base.id.toString() : "0");
     sb.push(",\n");
   }
-  sb.push("  ],\n  \"flags\": [\n");
+  sb.push('  ],\n  "flags": [\n');
   for (let cls of program.managedClasses.values()) {
     sb.push("    ");
     sb.push(cls.rttiFlags.toString());

@@ -309,7 +309,7 @@ export class Compiler extends DiagnosticEmitter {
   }
 
   /** Constructs a new compiler for a {@link Program} using the specified options. */
-  constructor(program: Program, options: Options | null = null) {
+  constructor(program: Program, options: Options | null = null, _module: Uint8Array | null = null) {
     super(program.diagnostics);
     this.program = program;
     this.resolver = program.resolver;
@@ -320,7 +320,7 @@ export class Compiler extends DiagnosticEmitter {
       // note that Binaryen's asm.js output utilizes the first 8 bytes for reinterpretations (#1547)
       max(options.memoryBase, 8)
     );
-    this.module = Module.create();
+    this.module = _module ? Module.createFrom(_module) : Module.create();
     var featureFlags: BinaryenFeatureFlags = 0;
     if (this.options.hasFeature(Feature.THREADS)) featureFlags |= FeatureFlags.Atomics;
     if (this.options.hasFeature(Feature.MUTABLE_GLOBAL)) featureFlags |= FeatureFlags.MutableGloabls;

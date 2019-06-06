@@ -186,6 +186,7 @@ export class Compiler {
   static singleton: Compiler;
   parser: Parser = null;
   stdlibLoaded: boolean = false;
+  mod: Uint8Array = null;
 
   static main(argv, options, callback?): void {
     if (!this.singleton) {
@@ -655,7 +656,12 @@ export class Compiler {
     stats.compileCount++;
     try {
       stats.compileTime += measure(() => {
-        module = assemblyscript.compileProgram(program, compilerOptions);
+        module = assemblyscript.compileProgram(
+          program,
+          compilerOptions,
+          this.mod
+        );
+        this.mod = module.toBinary();
       });
     } catch (e) {
       return callback(e);
