@@ -412,6 +412,7 @@ class Compiler {
                 return callback(Error("Parse error"));
             }
         };
+        let entries = [];
         // Include runtime template before entry files so its setup runs first
         {
             let runtimeName = String(args.runtime);
@@ -427,12 +428,12 @@ class Compiler {
             else {
                 runtimePath = "~lib/" + runtimePath;
             }
+            entries.push(runtimePath);
             stats.parseCount++;
             stats.parseTime += measure(() => {
                 this.parseFile(runtimeText, runtimePath, true);
             });
         }
-        let entries = [];
         // Include entry files
         for (let i = 0, k = argv.length; i < k; ++i) {
             const filename = argv[i];
@@ -470,7 +471,7 @@ class Compiler {
         }
         //Copy parser
         let parser = new assemblyscript.Parser();
-        // let entries = this.parser.program.sources.filter((source) => source.isEntry);
+        // this.parser.program.sources.filter((source) => source.isEntry);
         parser.program.sources = this.parser.program.sources.filter(source => !source.isEntry);
         parser.seenlog = this.parser.seenlog;
         parser.donelog = this.parser.donelog;

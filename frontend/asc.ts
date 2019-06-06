@@ -113,6 +113,9 @@ export function compileString(sources, options) {
 let writeOutUsed = false;
 
 interface Source {
+  normalizedPath: string;
+  internalPath: string;
+  simplePath: string;
   isEntry: boolean;
 }
 
@@ -498,7 +501,7 @@ export class Compiler {
         return callback(Error("Parse error"));
       }
     };
-
+    let entries = [];
     // Include runtime template before entry files so its setup runs first
     {
       let runtimeName = String(args.runtime);
@@ -513,13 +516,13 @@ export class Compiler {
       } else {
         runtimePath = "~lib/" + runtimePath;
       }
+      entries.push(runtimePath);
       stats.parseCount++;
       stats.parseTime += measure(() => {
         this.parseFile(runtimeText, runtimePath, true);
       });
     }
 
-    let entries = [];
     // Include entry files
     for (let i = 0, k = argv.length; i < k; ++i) {
       const filename = argv[i];
@@ -559,10 +562,8 @@ export class Compiler {
     }
     //Copy parser
     let parser: Parser = new assemblyscript.Parser();
-    // let entries = this.parser.program.sources.filter((source) => source.isEntry);
-    parser.program.sources = this.parser.program.sources.filter(
-      source => !source.isEntry
-    );
+    // this.parser.program.sources.filter((source) => source.isEntry);
+    parser.program.sources = this.parser.program.sources.filter(source => !source.isEntry);
     parser.seenlog = this.parser.seenlog;
     parser.donelog = this.parser.donelog;
     entries.forEach(source => {
@@ -605,16 +606,8 @@ export class Compiler {
     // Initialize default aliases
     assemblyscript.setGlobalAlias(compilerOptions, "Math", "NativeMath");
     assemblyscript.setGlobalAlias(compilerOptions, "Mathf", "NativeMathf");
-    assemblyscript.setGlobalAlias(
-      compilerOptions,
-      "abort",
-      "~lib/builtins/abort"
-    );
-    assemblyscript.setGlobalAlias(
-      compilerOptions,
-      "trace",
-      "~lib/builtins/trace"
-    );
+    assemblyscript.setGlobalAlias(compilerOptions, "abort", "~lib/builtins/abort");
+    assemblyscript.setGlobalAlias(compilerOptions, "trace", "~lib/builtins/trace");
 
     // Add or override aliases if specified
     if (args.use) {
