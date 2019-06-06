@@ -503,6 +503,7 @@ class Compiler {
         assemblyscript.setImportMemory(compilerOptions, args.importMemory);
         assemblyscript.setSharedMemory(compilerOptions, args.sharedMemory);
         assemblyscript.setImportTable(compilerOptions, args.importTable);
+        assemblyscript.setExplicitStart(compilerOptions, args.explicitStart);
         assemblyscript.setMemoryBase(compilerOptions, args.memoryBase >>> 0);
         assemblyscript.setSourceMap(compilerOptions, args.sourceMap != null);
         assemblyscript.setOptimizeLevelHints(compilerOptions, optimizeLevel, shrinkLevel);

@@ -1,6 +1,10 @@
 {
   "asc_flags": [
     "--runtime half",
+<<<<<<< HEAD
+=======
+    "--explicitStart",
+>>>>>>> master
     "--use ASC_RTRACE=1"
   ]
 }
