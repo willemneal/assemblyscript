@@ -598,16 +598,10 @@ export class Compiler {
     assemblyscript.setImportMemory(compilerOptions, args.importMemory);
     assemblyscript.setSharedMemory(compilerOptions, args.sharedMemory);
     assemblyscript.setImportTable(compilerOptions, args.importTable);
-    assemblyscript.setMemoryBase(
-      compilerOptions,
-      (args.memoryBase as number) >>> 0
-    );
+    assemblyscript.setExplicitStart(compilerOptions, args.explicitStart);
+    assemblyscript.setMemoryBase(compilerOptions, (args.memoryBase as number) >>> 0);
     assemblyscript.setSourceMap(compilerOptions, args.sourceMap != null);
-    assemblyscript.setOptimizeLevelHints(
-      compilerOptions,
-      optimizeLevel,
-      shrinkLevel
-    );
+    assemblyscript.setOptimizeLevelHints(compilerOptions,optimizeLevel, shrinkLevel);
 
     // Initialize default aliases
     assemblyscript.setGlobalAlias(compilerOptions, "Math", "NativeMath");

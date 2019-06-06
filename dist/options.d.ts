@@ -110,6 +110,10 @@ export interface Options {
      */
     noLib: boolean;
     /**
+     * Exports an explicit start function to be called manually.
+     */
+    explicitStart: boolean;
+    /**
      * Adds one or multiple paths to custom library components and
      * uses exports of all top-level files at this path as globals.
      */

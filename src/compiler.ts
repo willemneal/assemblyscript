@@ -193,6 +193,8 @@ export class Options {
   importTable: bool = false;
   /** If true, generates information necessary for source maps. */
   sourceMap: bool = false;
+  /** If true, generates an explicit start function. */
+  explicitStart: bool = false;
   /** Static memory start offset. */
   memoryBase: i32 = 0;
   /** Global aliases. */
@@ -366,10 +368,21 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
-    // compile the start function if not empty or called by main
-    var hasExplicitStart = program.explicitStartFunction !== null;
-    if (startFunctionBody.length || hasExplicitStart) {
+    // compile the start function if not empty or explicitly requested
+    var startIsEmpty = !startFunctionBody.length;
+    var explicitStart = options.explicitStart;
+    if (!startIsEmpty || explicitStart) {
       let signature = startFunctionInstance.signature;
+      if (!startIsEmpty && explicitStart) {
+        module.addGlobal(BuiltinSymbols.started, NativeType.I32, true, module.i32(0));
+        startFunctionBody.unshift(
+          module.if(
+            module.global_get(BuiltinSymbols.started, NativeType.I32),
+            module.return(),
+            module.global_set(BuiltinSymbols.started, module.i32(1))
+          )
+        );
+      }
       let funcRef = module.addFunction(
         startFunctionInstance.internalName,
         this.ensureFunctionType(
@@ -381,7 +394,8 @@ export class Compiler extends DiagnosticEmitter {
         module.block(null, startFunctionBody)
       );
       startFunctionInstance.finalize(module, funcRef);
-      if (!hasExplicitStart) module.setStart(funcRef);
+      if (!explicitStart) module.setStart(funcRef);
+      else module.addFunctionExport(startFunctionInstance.internalName, "__start");
     }
 
     // compile runtime features
@@ -1147,23 +1161,6 @@ export class Compiler extends DiagnosticEmitter {
         if (nonNull) flow.set(FlowFlags.RETURNS_NONNULL);
         flow.set(FlowFlags.RETURNS); // now is terminating
       }
-    }
-
-    // make the main function call `start` implicitly, but only once
-    if (instance.prototype == this.program.explicitStartFunction) {
-      module.addGlobal(BuiltinSymbols.started, NativeType.I32, true, module.i32(0));
-      stmts.unshift(
-        module.if(
-          module.unary(
-            UnaryOp.EqzI32,
-            module.global_get(BuiltinSymbols.started, NativeType.I32)
-          ),
-          module.block(null, [
-            module.call("start", null, NativeType.None),
-            module.global_set(BuiltinSymbols.started, module.i32(1))
-          ])
-        )
-      );
     }
 
     // make constructors return their instance pointer
@@ -2663,11 +2660,7 @@ export class Compiler extends DiagnosticEmitter {
 
   // === Expressions ==============================================================================
 
-  /**
-   * Compiles the value of an inlined constant element.
-   * @param retainType If true, the annotated type of the constant is retained. Otherwise, the value
-   *  is precomputed according to context.
-   */
+  /** Compiles the value of an inlined constant element. */
   compileInlineConstant(
     element: VariableLikeElement,
     contextualType: Type,
@@ -6720,26 +6713,34 @@ export class Compiler extends DiagnosticEmitter {
       for (let i = numArguments; i < maxArguments; ++i) {
         let initializer = parameterNodes[i].initializer;
         if (initializer) {
-          let resolved: Element | null;
-          if (
-            nodeIsConstantValue(initializer.kind) ||
-            (
-              (resolved = this.resolver.resolveExpression(initializer, instance.flow, parameterTypes[i])) &&
-              (
-                resolved.kind == ElementKind.GLOBAL
-                // resolved.kind == ElementKind.FUNCTION_TARGET
-              )
-            )
-          ) { // inline into the call
-            let previousFlow = this.currentFlow;
-            this.currentFlow = instance.flow;
+          if (nodeIsConstantValue(initializer.kind)) {
             operands.push(this.compileExpression(
               <Expression>parameterNodes[i].initializer,
               parameterTypes[i],
               ContextualFlags.IMPLICIT
             ));
-            this.currentFlow = previousFlow;
             continue;
+          }
+          let resolved = this.resolver.resolveExpression(initializer, instance.flow, parameterTypes[i]);
+          if (resolved) {
+            if (resolved.kind == ElementKind.GLOBAL) {
+              let global = <Global>resolved;
+              if (this.compileGlobal(global)) {
+                if (global.is(CommonFlags.INLINED)) {
+                  operands.push(
+                    this.compileInlineConstant(global, parameterTypes[i], ContextualFlags.IMPLICIT)
+                  );
+                } else {
+                  operands.push(
+                    this.convertExpression(
+                      module.global_get(global.internalName, global.type.toNativeType()),
+                      global.type, parameterTypes[i], false, false, initializer
+                    )
+                  );
+                }
+                continue;
+              }
+            }
           }
         }
         operands.push(parameterTypes[i].toNativeZero(module));

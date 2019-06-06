@@ -211,9 +211,15 @@
  (global $~lib/started (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 7032))
  (global $~lib/heap/__heap_base i32 (i32.const 7100))
+<<<<<<< HEAD
  (export "memory" (memory $0))
  (export "getString" (func $std/string/getString))
  (export "main" (func $std/string/main))
+=======
+ (export "__start" (func $start))
+ (export "memory" (memory $0))
+ (export "getString" (func $std/string/getString))
+>>>>>>> master
  (func $~lib/string/String#get:length (; 5 ;) (type $FUNCSIG$ii) (param $0 i32) (result i32)
   local.get $0
   i32.const 16
@@ -12141,6 +12147,7 @@
   global.get $std/string/str
   call $~lib/rt/pure/__retain
  )
+<<<<<<< HEAD
  (func $std/string/main (; 84 ;) (type $FUNCSIG$v)
   global.get $~lib/started
   i32.eqz
@@ -12154,6 +12161,19 @@
   call $start:std/string
  )
  (func $~lib/rt/pure/markGray (; 86 ;) (type $FUNCSIG$vi) (param $0 i32)
+=======
+ (func $start (; 84 ;) (type $FUNCSIG$v)
+  global.get $~lib/started
+  if
+   return
+  else   
+   i32.const 1
+   global.set $~lib/started
+  end
+  call $start:std/string
+ )
+ (func $~lib/rt/pure/markGray (; 85 ;) (type $FUNCSIG$vi) (param $0 i32)
+>>>>>>> master
   (local $1 i32)
   local.get $0
   i32.load offset=4
@@ -12180,7 +12200,11 @@
    call $~lib/rt/__visit_members
   end
  )
+<<<<<<< HEAD
  (func $~lib/rt/pure/scanBlack (; 87 ;) (type $FUNCSIG$vi) (param $0 i32)
+=======
+ (func $~lib/rt/pure/scanBlack (; 86 ;) (type $FUNCSIG$vi) (param $0 i32)
+>>>>>>> master
   local.get $0
   local.get $0
   i32.load offset=4
@@ -12197,7 +12221,11 @@
   i32.const 4
   call $~lib/rt/__visit_members
  )
+<<<<<<< HEAD
  (func $~lib/rt/pure/scan (; 88 ;) (type $FUNCSIG$vi) (param $0 i32)
+=======
+ (func $~lib/rt/pure/scan (; 87 ;) (type $FUNCSIG$vi) (param $0 i32)
+>>>>>>> master
   (local $1 i32)
   local.get $0
   i32.load offset=4
@@ -12234,7 +12262,11 @@
    end
   end
  )
+<<<<<<< HEAD
  (func $~lib/rt/pure/collectWhite (; 89 ;) (type $FUNCSIG$vi) (param $0 i32)
+=======
+ (func $~lib/rt/pure/collectWhite (; 88 ;) (type $FUNCSIG$vi) (param $0 i32)
+>>>>>>> master
   (local $1 i32)
   local.get $0
   i32.load offset=4
@@ -12272,7 +12304,11 @@
    call $~lib/rt/tlsf/freeBlock
   end
  )
+<<<<<<< HEAD
  (func $~lib/rt/pure/__visit (; 90 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+=======
+ (func $~lib/rt/pure/__visit (; 89 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+>>>>>>> master
   (local $2 i32)
   (local $3 i32)
   local.get $0
@@ -12426,7 +12462,11 @@
    end
   end
  )
+<<<<<<< HEAD
  (func $~lib/array/Array<~lib/string/String>#__visit_impl (; 91 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+=======
+ (func $~lib/array/Array<~lib/string/String>#__visit_impl (; 90 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+>>>>>>> master
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -12464,6 +12504,7 @@
    end
   end
  )
+<<<<<<< HEAD
  (func $~lib/array/Array<i32>#__visit_impl (; 92 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
   nop
  )
@@ -12477,6 +12518,21 @@
   nop
  )
  (func $~lib/rt/__visit_members (; 96 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+=======
+ (func $~lib/array/Array<i32>#__visit_impl (; 91 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+  nop
+ )
+ (func $~lib/array/Array<u32>#__visit_impl (; 92 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+  nop
+ )
+ (func $~lib/array/Array<u64>#__visit_impl (; 93 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+  nop
+ )
+ (func $~lib/array/Array<i16>#__visit_impl (; 94 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+  nop
+ )
+ (func $~lib/rt/__visit_members (; 95 ;) (type $FUNCSIG$vii) (param $0 i32) (param $1 i32)
+>>>>>>> master
   (local $2 i32)
   block $block$4$break
    block
@@ -12626,6 +12682,10 @@
   end
   unreachable
  )
+<<<<<<< HEAD
  (func $null (; 97 ;) (type $FUNCSIG$v)
+=======
+ (func $null (; 96 ;) (type $FUNCSIG$v)
+>>>>>>> master
  )
 )
