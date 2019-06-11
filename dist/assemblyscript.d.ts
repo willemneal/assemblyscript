@@ -2465,26 +2465,28 @@ declare module 'assemblyscript/src/flow' {
 	    ALLOCATES = 64,
 	    /** This flow calls super. Constructors only. */
 	    CALLS_SUPER = 128,
+	    /** This flow terminates (returns, throws or continues). */
+	    TERMINATES = 256,
 	    /** This flow conditionally returns in a child flow. */
-	    CONDITIONALLY_RETURNS = 256,
+	    CONDITIONALLY_RETURNS = 512,
 	    /** This flow conditionally throws in a child flow. */
-	    CONDITIONALLY_THROWS = 512,
+	    CONDITIONALLY_THROWS = 1024,
+	    /** This flow conditionally terminates in a child flow. */
+	    CONDITIONALLY_TERMINATES = 2048,
 	    /** This flow conditionally breaks in a child flow. */
-	    CONDITIONALLY_BREAKS = 1024,
+	    CONDITIONALLY_BREAKS = 4096,
 	    /** This flow conditionally continues in a child flow. */
-	    CONDITIONALLY_CONTINUES = 2048,
+	    CONDITIONALLY_CONTINUES = 8192,
 	    /** This flow conditionally allocates in a child flow. Constructors only. */
-	    CONDITIONALLY_ALLOCATES = 4096,
+	    CONDITIONALLY_ALLOCATES = 16384,
 	    /** This is an inlining flow. */
-	    INLINE_CONTEXT = 8192,
+	    INLINE_CONTEXT = 32768,
 	    /** This is a flow with explicitly disabled bounds checking. */
-	    UNCHECKED_CONTEXT = 16384,
-	    /** Any terminating flag. */
-	    ANY_TERMINATING = 57,
+	    UNCHECKED_CONTEXT = 65536,
 	    /** Any categorical flag. */
-	    ANY_CATEGORICAL = 255,
+	    ANY_CATEGORICAL = 511,
 	    /** Any conditional flag. */
-	    ANY_CONDITIONAL = 7936
+	    ANY_CONDITIONAL = 30208
 	}
 	/** Flags indicating the current state of a local. */
 	export enum LocalFlags {
