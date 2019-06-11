@@ -243,11 +243,9 @@
   i32.const 0
   call $rt/instanceof/BlackCat#constructor
   global.set $rt/instanceof/blackcat
-  block (result i32)
-   global.get $rt/instanceof/animal
-   drop
-   i32.const 1
-  end
+  global.get $rt/instanceof/animal
+  drop
+  i32.const 1
   i32.eqz
   if
    i32.const 0
@@ -297,11 +295,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block (result i32)
-   global.get $rt/instanceof/cat
-   drop
-   i32.const 1
-  end
+  global.get $rt/instanceof/cat
+  drop
+  i32.const 1
   i32.eqz
   if
    i32.const 0
@@ -350,11 +346,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block (result i32)
-   global.get $rt/instanceof/blackcat
-   drop
-   i32.const 1
-  end
+  global.get $rt/instanceof/blackcat
+  drop
+  i32.const 1
   i32.eqz
   if
    i32.const 0

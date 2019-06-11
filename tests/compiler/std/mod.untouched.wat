@@ -19,7 +19,7 @@
  (export "memory" (memory $0))
  (export "mod" (func $std/mod/mod))
  (start $start)
- (func $~lib/builtins/isNaN<f64> (; 2 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
+ (func $~lib/number/isNaN<f64> (; 2 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
   local.get $0
   local.get $0
   f64.ne
@@ -74,7 +74,7 @@
    i32.const 1
   else   
    local.get $1
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
   end
   if
    local.get $0
@@ -175,36 +175,37 @@
     local.get $4
     local.get $5
     i64.gt_s
+    i32.eqz
+    br_if $break|0
+    local.get $2
+    local.get $3
+    i64.ge_u
     if
      local.get $2
      local.get $3
-     i64.ge_u
+     i64.eq
      if
-      local.get $2
-      local.get $3
-      i64.eq
-      if
-       f64.const 0
-       local.get $0
-       f64.mul
-       return
-      end
-      local.get $2
-      local.get $3
-      i64.sub
-      local.set $2
+      f64.const 0
+      local.get $0
+      f64.mul
+      return
      end
      local.get $2
-     i64.const 1
-     i64.shl
-     local.set $2
-     local.get $4
-     i64.const 1
+     local.get $3
      i64.sub
-     local.set $4
-     br $continue|0
+     local.set $2
     end
+    local.get $2
+    i64.const 1
+    i64.shl
+    local.set $2
+    local.get $4
+    i64.const 1
+    i64.sub
+    local.set $4
+    br $continue|0
    end
+   unreachable
   end
   local.get $2
   local.get $3
@@ -274,10 +275,10 @@
  )
  (func $std/mod/check<f64> (; 4 ;) (type $FUNCSIG$idd) (param $0 f64) (param $1 f64) (result i32)
   local.get $1
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   if
    local.get $0
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
    return
   end
   local.get $1
@@ -320,7 +321,7 @@
    i32.const 0
   end
  )
- (func $~lib/builtins/isNaN<f32> (; 6 ;) (type $FUNCSIG$if) (param $0 f32) (result i32)
+ (func $~lib/number/isNaN<f32> (; 6 ;) (type $FUNCSIG$if) (param $0 f32) (result i32)
   local.get $0
   local.get $0
   f32.ne
@@ -375,7 +376,7 @@
    i32.const 1
   else   
    local.get $1
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
   end
   if
    local.get $0
@@ -476,36 +477,37 @@
     local.get $4
     local.get $5
     i32.gt_s
+    i32.eqz
+    br_if $break|0
+    local.get $2
+    local.get $3
+    i32.ge_u
     if
      local.get $2
      local.get $3
-     i32.ge_u
+     i32.eq
      if
-      local.get $2
-      local.get $3
-      i32.eq
-      if
-       f32.const 0
-       local.get $0
-       f32.mul
-       return
-      end
-      local.get $2
-      local.get $3
-      i32.sub
-      local.set $2
+      f32.const 0
+      local.get $0
+      f32.mul
+      return
      end
      local.get $2
-     i32.const 1
-     i32.shl
-     local.set $2
-     local.get $4
-     i32.const 1
+     local.get $3
      i32.sub
-     local.set $4
-     br $continue|0
+     local.set $2
     end
+    local.get $2
+    i32.const 1
+    i32.shl
+    local.set $2
+    local.get $4
+    i32.const 1
+    i32.sub
+    local.set $4
+    br $continue|0
    end
+   unreachable
   end
   local.get $2
   local.get $3
@@ -573,10 +575,10 @@
  )
  (func $std/mod/check<f32> (; 8 ;) (type $FUNCSIG$iff) (param $0 f32) (param $1 f32) (result i32)
   local.get $1
-  call $~lib/builtins/isNaN<f32>
+  call $~lib/number/isNaN<f32>
   if
    local.get $0
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
    return
   end
   local.get $1

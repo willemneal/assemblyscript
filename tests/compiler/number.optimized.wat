@@ -171,8 +171,12 @@
   loop $continue|0
    local.get $1
    i32.const 10
-   i32.div_u
+   i32.rem_u
    local.set $3
+   local.get $1
+   i32.const 10
+   i32.div_u
+   local.set $1
    local.get $2
    i32.const 1
    i32.sub
@@ -181,14 +185,11 @@
    i32.shl
    local.get $0
    i32.add
-   local.get $1
-   i32.const 10
-   i32.rem_u
+   local.get $3
    i32.const 48
    i32.add
    i32.store16
-   local.get $3
-   local.tee $1
+   local.get $1
    br_if $continue|0
   end
  )
@@ -305,14 +306,14 @@
   end
   i32.const 0
  )
- (func $~lib/builtins/isFinite<f64> (; 8 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
+ (func $~lib/number/isFinite<f64> (; 8 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
   local.get $0
   local.get $0
   f64.sub
   f64.const 0
   f64.eq
  )
- (func $~lib/builtins/isNaN<f64> (; 9 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
+ (func $~lib/number/isNaN<f64> (; 9 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
   local.get $0
   local.get $0
   f64.ne
@@ -523,79 +524,77 @@
     i64.add
     local.tee $1
     local.get $5
-    i64.le_u
-    if
-     global.get $~lib/util/number/_K
-     local.get $4
-     i32.add
-     global.set $~lib/util/number/_K
-     local.get $4
-     i32.const 2
-     i32.shl
-     local.get $12
-     i32.add
-     i64.load32_u
-     local.get $10
-     i64.extend_i32_s
-     i64.shl
-     local.set $3
-     local.get $2
+    i64.gt_u
+    br_if $continue|0
+    global.get $~lib/util/number/_K
+    local.get $4
+    i32.add
+    global.set $~lib/util/number/_K
+    local.get $4
+    i32.const 2
+    i32.shl
+    local.get $12
+    i32.add
+    i64.load32_u
+    local.get $10
+    i64.extend_i32_s
+    i64.shl
+    local.set $3
+    local.get $2
+    i32.const 1
+    i32.sub
+    i32.const 1
+    i32.shl
+    local.get $0
+    i32.add
+    local.tee $0
+    i32.load16_u
+    local.set $4
+    loop $continue|2
      i32.const 1
-     i32.sub
-     i32.const 1
-     i32.shl
-     local.get $0
-     i32.add
-     local.tee $0
-     i32.load16_u
-     local.set $4
-     loop $continue|2
+     local.get $9
+     local.get $1
+     i64.sub
+     local.get $1
+     local.get $3
+     i64.add
+     local.tee $8
+     local.get $9
+     i64.sub
+     i64.gt_u
+     local.get $8
+     local.get $9
+     i64.lt_u
+     select
+     i32.const 0
+     local.get $5
+     local.get $1
+     i64.sub
+     local.get $3
+     i64.ge_u
+     i32.const 0
+     local.get $1
+     local.get $9
+     i64.lt_u
+     select
+     select
+     if
+      local.get $4
       i32.const 1
-      local.get $9
-      local.get $1
-      i64.sub
+      i32.sub
+      local.set $4
       local.get $1
       local.get $3
       i64.add
-      local.tee $8
-      local.get $9
-      i64.sub
-      i64.gt_u
-      local.get $8
-      local.get $9
-      i64.lt_u
-      select
-      i32.const 0
-      local.get $5
-      local.get $1
-      i64.sub
-      local.get $3
-      i64.ge_u
-      i32.const 0
-      local.get $1
-      local.get $9
-      i64.lt_u
-      select
-      select
-      if
-       local.get $4
-       i32.const 1
-       i32.sub
-       local.set $4
-       local.get $1
-       local.get $3
-       i64.add
-       local.set $1
-       br $continue|2
-      end
+      local.set $1
+      br $continue|2
      end
-     local.get $0
-     local.get $4
-     i32.store16
-     local.get $2
-     return
     end
-    br $continue|0
+    local.get $0
+    local.get $4
+    i32.store16
+    local.get $2
+    return
    end
   end
   loop $continue|3
@@ -773,7 +772,8 @@
      loop $continue|1
       local.get $3
       i32.const 8
-      i32.ge_u
+      i32.lt_u
+      i32.eqz
       if
        local.get $0
        local.get $1
@@ -855,7 +855,8 @@
      loop $continue|4
       local.get $3
       i32.const 8
-      i32.ge_u
+      i32.lt_u
+      i32.eqz
       if
        local.get $0
        local.get $3
@@ -923,7 +924,7 @@
    i32.const 0
   end
   if (result i32)
-   loop $repeat|0
+   loop $loop|0
     block $break|0
      local.get $1
      local.get $3
@@ -940,7 +941,7 @@
      i32.const 1
      i32.add
      local.set $1
-     br $repeat|0
+     br $loop|0
     end
    end
    local.get $3
@@ -1012,7 +1013,7 @@
      i32.store
      i32.const 2
      local.set $2
-     loop $repeat|1
+     loop $loop|1
       block $break|1
        local.get $2
        local.get $3
@@ -1029,7 +1030,7 @@
        i32.const 1
        i32.add
        local.set $2
-       br $repeat|1
+       br $loop|1
       end
      end
      local.get $1
@@ -1047,22 +1048,20 @@
       i32.const 4
       i32.add
       local.tee $0
-      block (result i32)
-       local.get $3
-       i32.const 1
-       i32.sub
-       local.tee $2
+      local.get $3
+      i32.const 1
+      i32.sub
+      local.tee $2
+      i32.const 0
+      i32.lt_s
+      local.tee $1
+      if
        i32.const 0
-       i32.lt_s
-       local.tee $1
-       if
-        i32.const 0
-        local.get $2
-        i32.sub
-        local.set $2
-       end
        local.get $2
+       i32.sub
+       local.set $2
       end
+      local.get $2
       local.get $2
       call $~lib/util/number/decimalCount32
       i32.const 1
@@ -1105,22 +1104,20 @@
       i32.const 4
       i32.add
       local.tee $2
-      block (result i32)
-       local.get $3
-       i32.const 1
-       i32.sub
-       local.tee $0
+      local.get $3
+      i32.const 1
+      i32.sub
+      local.tee $0
+      i32.const 0
+      i32.lt_s
+      local.tee $3
+      if
        i32.const 0
-       i32.lt_s
-       local.tee $3
-       if
-        i32.const 0
-        local.get $0
-        i32.sub
-        local.set $0
-       end
        local.get $0
+       i32.sub
+       local.set $0
       end
+      local.get $0
       local.get $0
       call $~lib/util/number/decimalCount32
       i32.const 1
@@ -1407,11 +1404,11 @@
   (local $0 i32)
   (local $1 i32)
   f64.const 2
-  call $~lib/builtins/isFinite<f64>
+  call $~lib/number/isFinite<f64>
   i32.eqz
   if
    f64.const 2
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
    if
     i32.const 136
     return
@@ -1479,7 +1476,7 @@
  )
  (func $~lib/number/F64.isInteger (; 20 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
   local.get $0
-  call $~lib/builtins/isFinite<f64>
+  call $~lib/number/isFinite<f64>
   if (result i32)
    local.get $0
    f64.trunc
@@ -1876,7 +1873,7 @@
    unreachable
   end
   f64.const nan:0x8000000000000
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   i32.eqz
   if
    i32.const 0

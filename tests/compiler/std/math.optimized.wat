@@ -77,12 +77,12 @@
  (global $~lib/math/random_state1_32 (mut i32) (i32.const 0))
  (export "memory" (memory $0))
  (start $start)
- (func $~lib/builtins/isNaN<f64> (; 30 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
+ (func $~lib/number/isNaN<f64> (; 30 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
   local.get $0
   local.get $0
   f64.ne
  )
- (func $~lib/builtins/isFinite<f64> (; 31 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
+ (func $~lib/number/isFinite<f64> (; 31 ;) (type $FUNCSIG$id) (param $0 f64) (result i32)
   local.get $0
   local.get $0
   f64.sub
@@ -169,10 +169,10 @@
  (func $std/math/ulperr (; 33 ;) (type $FUNCSIG$dddd) (param $0 f64) (param $1 f64) (param $2 f64) (result f64)
   (local $3 i32)
   local.get $0
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   if (result i32)
    local.get $1
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
   else   
    i32.const 0
   end
@@ -215,7 +215,7 @@
    return
   end
   local.get $0
-  call $~lib/builtins/isFinite<f64>
+  call $~lib/number/isFinite<f64>
   i32.eqz
   if
    local.get $1
@@ -230,7 +230,6 @@
   local.get $0
   local.get $1
   f64.sub
-  local.set $0
   local.get $1
   i64.reinterpret_f64
   i64.const 52
@@ -246,7 +245,6 @@
    i32.add
    local.set $3
   end
-  local.get $0
   i32.const 0
   local.get $3
   i32.const -1075
@@ -265,10 +263,10 @@
    return
   end
   local.get $1
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   if
    local.get $0
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
    return
   end
   local.get $0
@@ -284,7 +282,7 @@
   end
   i32.const 1
  )
- (func $~lib/builtins/isNaN<f32> (; 35 ;) (type $FUNCSIG$if) (param $0 f32) (result i32)
+ (func $~lib/number/isNaN<f32> (; 35 ;) (type $FUNCSIG$if) (param $0 f32) (result i32)
   local.get $0
   local.get $0
   f32.ne
@@ -368,10 +366,10 @@
  (func $std/math/ulperrf (; 37 ;) (type $FUNCSIG$ffff) (param $0 f32) (param $1 f32) (param $2 f32) (result f32)
   (local $3 i32)
   local.get $0
-  call $~lib/builtins/isNaN<f32>
+  call $~lib/number/isNaN<f32>
   if (result i32)
    local.get $1
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
   else   
    i32.const 0
   end
@@ -429,7 +427,6 @@
   local.get $0
   local.get $1
   f32.sub
-  local.set $0
   local.get $1
   i32.reinterpret_f32
   i32.const 23
@@ -444,7 +441,6 @@
    i32.add
    local.set $3
   end
-  local.get $0
   i32.const 0
   local.get $3
   i32.const -150
@@ -463,10 +459,10 @@
    return
   end
   local.get $1
-  call $~lib/builtins/isNaN<f32>
+  call $~lib/number/isNaN<f32>
   if
    local.get $0
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
    return
   end
   local.get $0
@@ -2065,7 +2061,7 @@
   i32.ge_u
   if
    local.get $0
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
    if
     local.get $0
     return
@@ -2303,7 +2299,7 @@
   i32.ge_u
   if
    local.get $0
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
    if
     local.get $0
     return
@@ -2630,12 +2626,12 @@
   (local $6 i32)
   (local $7 i32)
   local.get $1
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   if (result i32)
    i32.const 1
   else   
    local.get $0
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
   end
   if
    local.get $1
@@ -2893,12 +2889,12 @@
   (local $3 i32)
   (local $4 i32)
   local.get $1
-  call $~lib/builtins/isNaN<f32>
+  call $~lib/number/isNaN<f32>
   if (result i32)
    i32.const 1
   else   
    local.get $0
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
   end
   if
    local.get $1
@@ -3702,7 +3698,7 @@
   i32.ge_u
   if
    local.get $0
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
    if
     local.get $0
     return
@@ -3972,7 +3968,7 @@
   i32.ge_u
   if
    local.get $0
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
    if
     local.get $0
     return
@@ -4718,10 +4714,8 @@
   i64.lt_u
   if
    local.get $4
-   local.set $11
    local.get $2
    local.set $4
-   local.get $11
    local.set $2
   end
   local.get $4
@@ -4903,10 +4897,8 @@
   i32.lt_u
   if
    local.get $3
-   local.set $5
    local.get $2
    local.set $3
-   local.get $5
    local.set $2
   end
   local.get $3
@@ -5898,7 +5890,7 @@
    i32.const 1
   else   
    local.get $1
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
   end
   if
    local.get $0
@@ -6117,7 +6109,7 @@
    i32.const 1
   else   
    local.get $1
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
   end
   if
    local.get $0
@@ -8262,7 +8254,6 @@
   i64.const 63
   i64.shr_u
   i32.wrap_i64
-  local.set $8
   i32.const 1
   local.get $3
   i64.const 2047
@@ -8277,7 +8268,7 @@
    i32.const 1
   else   
    local.get $1
-   call $~lib/builtins/isNaN<f64>
+   call $~lib/number/isNaN<f64>
   end
   if
    local.get $0
@@ -8362,7 +8353,8 @@
    loop $continue|1
     local.get $3
     local.get $6
-    i64.gt_s
+    i64.le_s
+    i32.eqz
     if
      local.get $2
      local.get $4
@@ -8483,7 +8475,6 @@
   select
   select
   local.set $0
-  local.get $8
   if
    local.get $0
    f64.neg
@@ -8526,7 +8517,6 @@
   local.get $2
   i32.const 31
   i32.shr_u
-  local.set $8
   local.get $3
   i32.const 255
   i32.eq
@@ -8539,7 +8529,7 @@
    i32.const 1
   else   
    local.get $1
-   call $~lib/builtins/isNaN<f32>
+   call $~lib/number/isNaN<f32>
   end
   if
    local.get $0
@@ -8619,7 +8609,8 @@
    loop $continue|1
     local.get $3
     local.get $5
-    i32.gt_s
+    i32.le_s
+    i32.eqz
     if
      local.get $2
      local.get $6
@@ -8649,23 +8640,21 @@
      br $continue|1
     end
    end
-   block (result i32)
+   local.get $2
+   local.get $6
+   i32.ge_u
+   if
+    local.get $4
+    i32.const 1
+    i32.add
+    local.set $4
     local.get $2
     local.get $6
-    i32.ge_u
-    if
-     local.get $4
-     i32.const 1
-     i32.add
-     local.set $4
-     local.get $2
-     local.get $6
-     i32.sub
-     local.set $2
-    end
-    local.get $2
-    i32.eqz
+    i32.sub
+    local.set $2
    end
+   local.get $2
+   i32.eqz
    if
     i32.const -30
     local.set $3
@@ -8739,7 +8728,6 @@
   select
   select
   local.set $0
-  local.get $8
   if
    local.get $0
    f32.neg
@@ -9437,7 +9425,6 @@
    local.get $9
    select
   end
-  local.set $2
   global.get $~lib/math/rempio2f_y
   local.tee $3
   local.get $3
@@ -9477,7 +9464,6 @@
   f64.mul
   f64.add
   local.set $1
-  local.get $2
   i32.const 1
   i32.and
   if
@@ -9699,7 +9685,7 @@
   local.get $0
   local.get $1
   f64.add
-  call $~lib/builtins/isFinite<f64>
+  call $~lib/number/isFinite<f64>
   i32.eqz
   if
    f64.const 0
@@ -9730,7 +9716,7 @@
  )
  (func $~lib/math/NativeMath.clz32 (; 158 ;) (type $FUNCSIG$dd) (param $0 f64) (result f64)
   local.get $0
-  call $~lib/builtins/isFinite<f64>
+  call $~lib/number/isFinite<f64>
   i32.eqz
   if
    f64.const 32
@@ -9756,7 +9742,8 @@
   loop $continue|0
    local.get $1
    i32.const 0
-   i32.gt_s
+   i32.le_s
+   i32.eqz
    if
     local.get $0
     local.get $2
@@ -31401,7 +31388,7 @@
   call $~lib/bindings/Math/random
   i64.reinterpret_f64
   call $~lib/math/NativeMath.seedRandom
-  loop $repeat|0
+  loop $loop|0
    block $break|0
     local.get $0
     f64.convert_i32_s
@@ -31425,7 +31412,7 @@
      i32.const 1
      i32.add
      local.set $0
-     br $repeat|0
+     br $loop|0
     else     
      i32.const 0
      i32.const 24
@@ -31442,7 +31429,7 @@
   call $~lib/math/NativeMath.seedRandom
   i32.const 0
   local.set $0
-  loop $repeat|1
+  loop $loop|1
    block $break|1
     local.get $0
     f64.convert_i32_s
@@ -31466,7 +31453,7 @@
      i32.const 1
      i32.add
      local.set $0
-     br $repeat|1
+     br $loop|1
     else     
      i32.const 0
      i32.const 24
@@ -39511,7 +39498,7 @@
   f32.const nan:0x400000
   i32.const 1
   call $~lib/math/ipow32f
-  call $~lib/builtins/isNaN<f32>
+  call $~lib/number/isNaN<f32>
   i32.eqz
   if
    i32.const 0
@@ -39524,7 +39511,7 @@
   f32.const nan:0x400000
   i32.const -1
   call $~lib/math/ipow32f
-  call $~lib/builtins/isNaN<f32>
+  call $~lib/number/isNaN<f32>
   i32.eqz
   if
    i32.const 0
@@ -39537,7 +39524,7 @@
   f32.const nan:0x400000
   i32.const 2
   call $~lib/math/ipow32f
-  call $~lib/builtins/isNaN<f32>
+  call $~lib/number/isNaN<f32>
   i32.eqz
   if
    i32.const 0
@@ -39719,7 +39706,7 @@
   f64.const nan:0x8000000000000
   i32.const 1
   call $~lib/math/ipow64f
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   i32.eqz
   if
    i32.const 0
@@ -39732,7 +39719,7 @@
   f64.const nan:0x8000000000000
   i32.const -1
   call $~lib/math/ipow64f
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   i32.eqz
   if
    i32.const 0
@@ -39745,7 +39732,7 @@
   f64.const nan:0x8000000000000
   i32.const 2
   call $~lib/math/ipow64f
-  call $~lib/builtins/isNaN<f64>
+  call $~lib/number/isNaN<f64>
   i32.eqz
   if
    i32.const 0
