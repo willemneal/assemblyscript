@@ -9,6 +9,6 @@ $BASEDIR/bin/asc test.ts -o test.wasm --textFile test.wat
 prettier --parser typescript --write main_near.ts
 prettier --parser typescript --write model_near.ts
 node test.js
-diff -U 5 main_near.ts.expected main_near.ts
-diff -U 5 model_near.ts.expected model_near.ts
-diff -U 5 test.wat.expected test.wat
+diff -U 5 expected.main_near.ts main_near.ts
+diff -U 5 expected.model_near.ts model_near.ts
+diff -U 5 expected.test.wat test.wat
