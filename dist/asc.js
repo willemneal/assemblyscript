@@ -36,7 +36,6 @@ if (process.removeAllListeners)
     process.removeAllListeners("uncaughtException");
 let assemblyscript = require("../dist/assemblyscript");
 const glob = __importStar(require("glob"));
-const assert_1 = __importDefault(require("assert"));
 /** Whether this is a webpack bundle or not. */
 // export const isBundle = typeof BUNDLE_VERSION === "string";
 /** Whether asc runs the sources directly or not. */
@@ -44,7 +43,7 @@ const assert_1 = __importDefault(require("assert"));
 /** AssemblyScript version. */
 exports.version = require(__dirname + "/../package.json").version;
 /** Available CLI options. */
-exports.options = require(__dirname + "/../cli/asc.json");
+exports.cliOptions = require(__dirname + "/../cli/asc.json");
 /** Common root used in source maps. */
 exports.sourceMapRoot = "assemblyscript:///";
 /** Prefix used for library files. */
@@ -169,8 +168,7 @@ class Compiler {
             throw Error("'options.stdout' must be specified");
         if (!stderr)
             throw Error("'options.stderr' must be specified");
-        let config = require(__dirname + "/../cli/asc.json");
-        const opts = optionsUtil.parse(argv, config);
+        const opts = optionsUtil.parse(argv, exports.cliOptions);
         const args = opts.options;
         argv = opts.arguments;
         if (args.noColors) {
@@ -229,7 +227,7 @@ class Compiler {
                 "",
                 color.white("OPTIONS")
             ]
-                .concat(optionsUtil.help(options, { indent: 24, eol: EOL }))
+                .concat(optionsUtil.help(exports.cliOptions, { indent: 2, eol: EOL }))
                 .join(EOL) + EOL);
             return callback(null);
         }
@@ -283,15 +281,19 @@ class Compiler {
                     let regex = new RegExp(`.*${_path}/(.*)\/assembly\/(.*)`);
                     libPath = libPath.replace(regex, "$1/$2");
                     packages.set(libPath.substring(0, libPath.indexOf("/")), _path);
-                    libPath = libPath.replace(/\.ts$/, "");
-                    if (!exports.libraryFiles[libPath]) {
-                        exports.libraryFiles[libPath] = readFile(file, baseDir);
-                        assert_1.default(exports.libraryFiles[libPath] != null);
-                        stats.parseCount++;
-                        stats.parseTime += measure(() => {
-                            this.parseFile(exports.libraryFiles[libPath], exports.libraryPrefix + libPath + ".ts", false);
-                        });
-                    }
+                    // libPath = libPath.replace(/\.ts$/, "");
+                    // if (!libraryFiles[libPath]) {
+                    //   libraryFiles[libPath] = readFile(file, baseDir);
+                    //   assert(libraryFiles[libPath] != null);
+                    //   stats.parseCount++;
+                    //   stats.parseTime += measure(() => {
+                    //     this.parseFile(
+                    //       libraryFiles[libPath],
+                    //       libraryPrefix + libPath + ".ts",
+                    //       false
+                    // );
+                    // });
+                    // }
                 });
             }
         }

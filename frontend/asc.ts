@@ -40,7 +40,7 @@ import assert from "assert";
 export const version = require(__dirname + "/../package.json").version;
 
 /** Available CLI options. */
-export const options = require(__dirname + "/../cli/asc.json");
+export const cliOptions = require(__dirname + "/../cli/asc.json");
 
 /** Common root used in source maps. */
 export const sourceMapRoot = "assemblyscript:///";
@@ -224,8 +224,8 @@ export class Compiler {
     // Output must be specified if not present in the environment
     if (!stdout) throw Error("'options.stdout' must be specified");
     if (!stderr) throw Error("'options.stderr' must be specified");
-    let config = require(__dirname + "/../cli/asc.json");
-    const opts = optionsUtil.parse(argv, config);
+
+    const opts = optionsUtil.parse(argv, cliOptions);
     const args = opts.options;
     argv = opts.arguments;
     if (args.noColors) {
@@ -294,7 +294,7 @@ export class Compiler {
           "",
           color.white("OPTIONS")
         ]
-          .concat(optionsUtil.help(options, { indent: 24, eol: EOL }))
+          .concat(optionsUtil.help(cliOptions, { indent: 2, eol: EOL }))
           .join(EOL) + EOL
       );
       return callback(null);
@@ -359,19 +359,19 @@ export class Compiler {
           let regex = new RegExp(`.*${_path}/(.*)\/assembly\/(.*)`);
           libPath = libPath.replace(regex, "$1/$2");
           packages.set(libPath.substring(0, libPath.indexOf("/")), _path);
-          libPath = libPath.replace(/\.ts$/, "");
-          if (!libraryFiles[libPath]) {
-            libraryFiles[libPath] = readFile(file, baseDir);
-            assert(libraryFiles[libPath] != null);
-            stats.parseCount++;
-            stats.parseTime += measure(() => {
-              this.parseFile(
-                libraryFiles[libPath],
-                libraryPrefix + libPath + ".ts",
-                false
-              );
-            });
-          }
+          // libPath = libPath.replace(/\.ts$/, "");
+          // if (!libraryFiles[libPath]) {
+          //   libraryFiles[libPath] = readFile(file, baseDir);
+          //   assert(libraryFiles[libPath] != null);
+          //   stats.parseCount++;
+          //   stats.parseTime += measure(() => {
+          //     this.parseFile(
+          //       libraryFiles[libPath],
+          //       libraryPrefix + libPath + ".ts",
+          //       false
+              // );
+            // });
+          // }
         });
       }
     }
