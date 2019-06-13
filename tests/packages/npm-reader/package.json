@@ -1,0 +1,19 @@
+{
+  "name": "npm-reader",
+  "version": "0.0.2",
+  "description": "Reads package.json files",
+  "scripts": {
+    "test": "asp",
+    "build": "asc assembly/index.ts --path node_modules --noEmit --runtime stub"
+  },
+  "keywords": [
+    "AssemblyScript"
+  ],
+  "author": "Willem Wyndham",
+  "license": "MIT",
+  "dependencies": {
+    "as-pect": "github:WebAssemblyOS/as-pect#dev-frontend",
+    "assemblyscript": "file:../../..",
+    "assemblyscript-json": "github:WebAssemblyOS/assemblyscript-json#new_runtime"
+  }
+}
