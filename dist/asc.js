@@ -58,7 +58,10 @@ exports.libraryFiles = (() => {
     const libDir = path.join(__dirname, "..", "std", "assembly");
     let libFiles = glob.sync("**/!(*.d).ts", { cwd: libDir });
     const bundled = {};
-    libFiles.forEach(file => (bundled[file.replace(/\.ts$/, "")] = fs.readFileSync(path.join(libDir, file), "utf8")));
+    libFiles.forEach(file => {
+        let cleanFile = file.replace(/\.ts$/, "");
+        (bundled[cleanFile] = fs.readFileSync(path.join(libDir, file), "utf8"));
+    });
     return bundled;
 })();
 /** Bundled definition files. */
@@ -267,36 +270,6 @@ class Compiler {
             }
             return false;
         }
-        if (args.path) {
-            for (let _path of args.path) {
-                let libFiles = glob.sync(`${_path}/**/assembly/index.ts`, {
-                    cwd: baseDir
-                });
-                libFiles = libFiles
-                    .filter(x => !/\/std/.test(x))
-                    .filter(x => !/\_\_.*\_\_/.test(x))
-                    .filter(x => !/\.d\.ts$/.test(x));
-                libFiles.forEach(file => {
-                    let libPath = file.substring(file.lastIndexOf(_path));
-                    let regex = new RegExp(`.*${_path}/(.*)\/assembly\/(.*)`);
-                    libPath = libPath.replace(regex, "$1/$2");
-                    packages.set(libPath.substring(0, libPath.indexOf("/")), _path);
-                    // libPath = libPath.replace(/\.ts$/, "");
-                    // if (!libraryFiles[libPath]) {
-                    //   libraryFiles[libPath] = readFile(file, baseDir);
-                    //   assert(libraryFiles[libPath] != null);
-                    //   stats.parseCount++;
-                    //   stats.parseTime += measure(() => {
-                    //     this.parseFile(
-                    //       libraryFiles[libPath],
-                    //       libraryPrefix + libPath + ".ts",
-                    //       false
-                    // );
-                    // });
-                    // }
-                });
-            }
-        }
         if (!this.stdlibLoaded) {
             // Include library files
             Object.keys(exports.libraryFiles).forEach(libPath => {
@@ -380,10 +353,29 @@ class Compiler {
                 /*
                 In this case the library wasn't found so we check paths
                 */
-                if (sourceText == null && args.path && isPackage(sourcePath)) {
+                if (sourceText == null && args.path) {
                     for (let _path of args.path) {
+                        let _package = sourcePath.replace(/\~lib\/([^\/]*).*/, `$1`);
                         console.log(`Looking for ${sourcePath} in ${_path}`);
-                        let realPath = _p => _p.replace(/\~lib\/([^/]*)\/(.*)/, `${_path}/$1/assembly/$2`);
+                        let ascMain = (() => {
+                            if (packages.has(_package)) {
+                                return packages.get(_package);
+                            }
+                            let p = path.join(_path, _package, "package.json");
+                            let res = readFile(p, baseDir);
+                            if (res) {
+                                let mainFile = JSON.parse(res).ascMain;
+                                if (mainFile) {
+                                    let newPackage = mainFile.replace(/(.*)\/index\.ts/, '$1');
+                                    packages.set(_package, newPackage);
+                                    return newPackage;
+                                }
+                            }
+                            return "assembly";
+                        })();
+                        let realPath = (_p) => {
+                            return _p.replace(/\~lib\/([^/]*)\/(.*)/, `${_path}/$1/${ascMain}/$2`);
+                        };
                         const plainName = sourcePath;
                         const indexName = sourcePath + "/index";
                         sourceText = readFile(realPath(plainName) + ".ts", baseDir);
