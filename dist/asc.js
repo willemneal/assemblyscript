@@ -34,7 +34,30 @@ const EOL = (() => (process.platform === "win32" ? "\r\n" : "\n"))();
 // useless code fragment on top of an actual error. suppress this:
 if (process.removeAllListeners)
     process.removeAllListeners("uncaughtException");
-let assemblyscript = require("../dist/assemblyscript");
+let assemblyscript, isDev = false;
+(() => {
+    try { // `asc` on the command line
+        assemblyscript = require("../dist/assemblyscript.js");
+    }
+    catch (e) {
+        try { // `asc` on the command line without dist files
+            require("ts-node").register({ project: path.join(__dirname, "..", "src", "tsconfig.json") });
+            require("../src/glue/js");
+            assemblyscript = require("../src");
+            isDev = true;
+        }
+        catch (e_ts) {
+            try { // `require("dist/asc.js")` in explicit browser tests
+                assemblyscript = eval("require('./assemblyscript')");
+            }
+            catch (e) {
+                // combine both errors that lead us here
+                e.stack = e_ts.stack + "\n---\n" + e.stack;
+                throw e;
+            }
+        }
+    }
+})();
 const glob = __importStar(require("glob"));
 /** Whether this is a webpack bundle or not. */
 // export const isBundle = typeof BUNDLE_VERSION === "string";
@@ -259,17 +282,8 @@ class Compiler {
             });
         }
         // Begin parsing
-        let glob = require("glob");
         //maps package names to parent directory
         let packages = new Map();
-        function isPackage(name) {
-            for (let _package of packages.keys()) {
-                if (new RegExp(_package).test(name)) {
-                    return true;
-                }
-            }
-            return false;
-        }
         if (!this.stdlibLoaded) {
             // Include library files
             Object.keys(exports.libraryFiles).forEach(libPath => {
@@ -390,6 +404,10 @@ class Compiler {
                         }
                         if (sourceText !== null) {
                             console.log(`Found ${sourcePath} at ${realPath(sourcePath)}`);
+                            let newPath = path.join(_path, _package, "node_modules");
+                            if (!args.path.includes(newPath)) {
+                                args.path.push(newPath);
+                            }
                             break;
                         }
                     }
