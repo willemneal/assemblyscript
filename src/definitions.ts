@@ -183,9 +183,16 @@ export class NEARBindingsBuilder extends ExportsWalker {
   private exportedFunctions: Function[] = [];
   classInjections = new Map<string, string>();
   classRanges = new Map<string, Range>();
+  nearFile: string;
 
-  static build(program: Program): string {
-    return new NEARBindingsBuilder(program).build();
+  static build(program: Program, nearFile?: string): string {
+    debugger;
+    return new NEARBindingsBuilder(program, false, nearFile).build();
+  }
+
+  constructor(program: Program, includePrivate: boolean, nearFile: string = "."){
+    super(program, includePrivate);
+    this.nearFile = nearFile;
   }
 
   visitGlobal(name: string, element: Global): void {
@@ -257,7 +264,7 @@ export class NEARBindingsBuilder extends ExportsWalker {
     this.generateEncodeFunction(returnType);
     this.sb.push(`export function ${element.name}(): void {
       // Reading input bytes.
-      let json = storage._internalReadBytes(4, 0, 0);
+      let json = storage._internalReadBytes(4, 0, 0)!;
       let handler = new __near_ArgsParser_${element.name}();
       handler.buffer = json;
       handler.decoder = new JSONDecoder<__near_ArgsParser_${element.name}>(handler);
@@ -307,11 +314,11 @@ export class NEARBindingsBuilder extends ExportsWalker {
     this.sb.push(`
       pushObject(name: string): bool {`);
     this.sb.push(`if (!this.handledRoot) {
-      assert(name == null);
+      assert(name == null || name.length == 0);
       this.handledRoot = true;
       return true;
     } else {
-      assert(name != null);
+      assert(name != null || name.length != 0);
     }`);
     this.generatePushHandler(valuePrefix, nonBasicFields.filter(field => !this.isArrayType(field.type)));
     this.sb.push(`
@@ -398,7 +405,7 @@ export class NEARBindingsBuilder extends ExportsWalker {
         ${valuePrefix}.push(<${fieldTypeName}>null);
       }
       pushArray(name: string): bool {
-        assert(name == null && !this.handledRoot);
+        assert((name == null || name.length == 0) && !this.handledRoot);
         this.handledRoot = true;
         return true;
       }`);
@@ -408,7 +415,7 @@ export class NEARBindingsBuilder extends ExportsWalker {
         return false;
       }
       pushArray(name: string): bool {
-        assert(name == null);
+        assert(name == null || name.length == 0);
         if (!this.handledRoot) {
           this.handledRoot = true;
           return true;
@@ -482,7 +489,7 @@ export class NEARBindingsBuilder extends ExportsWalker {
 
         private _encoder(): JSONEncoder {
           let encoder: JSONEncoder = new JSONEncoder();
-          encoder.pushObject(null);
+          encoder.pushObject("");
           __near_encode_${typeName}(this, encoder);
           encoder.popObject();
           return encoder;
@@ -510,7 +517,7 @@ export class NEARBindingsBuilder extends ExportsWalker {
     if (sourcesWithExport.length > 1) {
       console.log(`WARN: more than one file exporting ${methodName}: ${sourcesWithExport.map(s => s.normalizedPath)}`);
     }
-
+    debugger;
     let importPath = sourcesWithExport[0].normalizedPath.replace('.ts', '');
     this.sb.push(`import { ${methodName} } from "./${importPath}";`);
     return true;
@@ -669,17 +676,13 @@ export class NEARBindingsBuilder extends ExportsWalker {
 
     let allExported = <Element[]>this.exportedFunctions.filter(e => e.is(CommonFlags.MODULE_EXPORT));
     let allImportsStr = allExported.map(c => `${c.name} as wrapped_${c.name}`).join(", ");
+    let preamble = this.nearFile.split("/").length > 1 ? ".." : "."
 
-    this.sb = [`
-      import { storage, near, base64 } from "./near";
-      import { JSONEncoder } from "./json/encoder";
-      import { JSONDecoder, ThrowingJSONHandler, DecoderState } from "./json/decoder";
-      import {${allImportsStr}} from "./${mainSource.normalizedPath.replace(".ts", "")}";
-      
-      // Runtime functions
-      @external("env", "return_value")
-      declare function return_value(value_len: usize, value_ptr: usize): void;
-    `].concat(this.sb);
+    this.sb = [`import { storage, near, base64, return_value } from "near-runtime-ts";
+import { JSONEncoder } from "assemblyscript-json";
+import { JSONDecoder, ThrowingJSONHandler, DecoderState } from "assemblyscript-json";
+`, allImportsStr.length > 0 ? `import {${allImportsStr}} from "${preamble}/${mainSource.normalizedPath.replace(".ts", "")}";`  : ""
+    ].concat(this.sb);
 
     for (let [key, value] of this.classRanges) {
       let injections = this.classInjections.get(key);

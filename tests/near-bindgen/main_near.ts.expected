@@ -1,6 +1,6 @@
-import { storage, near, base64 } from "./near";
-import { JSONEncoder } from "./json/encoder";
-import { JSONDecoder, ThrowingJSONHandler, DecoderState } from "./json/decoder";
+import { storage, near, base64 } from "near-runtime-ts";
+import { JSONEncoder } from "assemblyscript-json/encoder";
+import { JSONDecoder, ThrowingJSONHandler, DecoderState } from "assemblyscript-json/decoder";
 import {
   doNothing as wrapped_doNothing,
   add as wrapped_add,
@@ -14,7 +14,7 @@ import {
 // Runtime functions
 declare function return_value(value_len: usize, value_ptr: usize): void;
 
-import { storage, context, ContractPromise, near } from "./near";
+import { storage, context, ContractPromise, near } from "near-runtime-ts";
 import { FooBar, ContainerClass, AnotherContainerClass } from "./model_near";
 import {
   PromiseArgs,

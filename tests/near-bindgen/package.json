@@ -1,0 +1,19 @@
+{
+  "name": "near-bindgen",
+  "version": "0.0.0",
+  "description": "Tests for near bindings",
+  "main": "test.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "assemblyscript-json": "file:../../../../c/assemblyscript-json",
+    "bignum": "github:MaxGraey/bignum.wasm",
+    "near-runtime-ts": "file:../../../near-runtime-ts"
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
+}

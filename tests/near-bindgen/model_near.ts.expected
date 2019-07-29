@@ -1,6 +1,10 @@
-import { storage, near, base64 } from "./near";
-import { JSONEncoder } from "./json/encoder";
-import { JSONDecoder, ThrowingJSONHandler, DecoderState } from "./json/decoder";
+import { storage, near, base64 } from "near-runtime-ts";
+import { JSONEncoder } from "assemblyscript-json";
+import {
+  JSONDecoder,
+  ThrowingJSONHandler,
+  DecoderState
+} from "assemblyscript-json";
 import {} from "./model";
 
 // Runtime functions

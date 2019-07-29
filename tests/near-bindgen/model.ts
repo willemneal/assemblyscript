@@ -1,4 +1,4 @@
-import { u128 } from "./bignum/integer/u128";
+import { u128 } from "bignum";
 
 export class FooBar {
     foo: i32 = 0;

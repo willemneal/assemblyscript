@@ -1,11 +1,7 @@
 // These imports need to be copied properly
-import { storage, context, ContractPromise, near } from "./near";
+import { storage, context, ContractPromise, near } from "near-runtime-ts";
 import { FooBar, ContainerClass, AnotherContainerClass } from "./model_near";
 import { PromiseArgs, MyCallbackResult, MyContractPromiseResult } from "./model_near";
-
-
-@external("env", "log")
-declare function log(str: string): void;
 
 export function doNothing(): void {
 
@@ -40,8 +36,8 @@ export function callbackWithName(args: PromiseArgs): MyCallbackResult {
     for (let i = 0; i < contractResults.length; ++i) {
         allRes[i] = new MyContractPromiseResult();
         allRes[i].ok = contractResults[i].success;
-        if (allRes[i].ok && contractResults[i].buffer != null && contractResults[i].buffer.length > 0) {
-            allRes[i].r = MyCallbackResult.decode(contractResults[i].buffer);
+        if (allRes[i].ok && contractResults[i].buffer != null && contractResults[i].buffer!.length > 0) {
+            allRes[i].r = MyCallbackResult.decode(contractResults[i].buffer!);
         }
     }
     let result: MyCallbackResult = {

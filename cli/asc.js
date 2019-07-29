@@ -339,6 +339,7 @@ exports.main = function main(argv, options, callback) {
         sourceText = readFile(plainName + ".ts", baseDir);
         if (sourceText !== null) {
           sourcePath = plainName + ".ts";
+          sysPath = path.join(baseDir, sourcePath);
         } else {
           sourceText = readFile(indexName + ".ts", baseDir);
           if (sourceText !== null) {
@@ -441,7 +442,9 @@ exports.main = function main(argv, options, callback) {
       if (sourceText == null) {
         return callback(Error("Import file '" + sourcePath + ".ts' not found."));
       }
-      importPathMap.set(sourcePath.replace(/\.ts$/, ""), sysPath);
+      let _path = sourcePath.replace(/\.ts$/, "");
+      if (importPathMap.has(_path)) continue;
+      importPathMap.set(_path, sysPath);
       stats.parseCount++;
       stats.parseTime += measure(() => {
         assemblyscript.parseFile(sourceText, sourcePath, false, parser);
@@ -799,7 +802,7 @@ exports.main = function main(argv, options, callback) {
       if (args.nearFile.length) {
         stats.emitCount++;
         stats.emitTime += measure(() => {
-          nearBindings = assemblyscript.buildNEAR(program);
+          nearBindings = assemblyscript.buildNEAR(program, args.nearFile);
         });
         writeFile(args.nearFile, nearBindings, baseDir);
       } else if (!hasStdout) {

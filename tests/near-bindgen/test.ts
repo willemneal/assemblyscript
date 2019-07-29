@@ -1,9 +1,9 @@
 
 import * as main from "./main_near";
 import * as model from "./model_near";
-import { near, base64 } from "./near";
+import { near, base64 } from "near-runtime-ts";
 import { FooBar } from "./model_near";
-import { u128 } from "./bignum/integer/u128";
+import { u128 } from "bignum";
 
 @external("env", "log")
 declare function log(str: string): void;

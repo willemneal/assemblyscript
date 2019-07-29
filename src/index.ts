@@ -159,8 +159,8 @@ export function buildTSD(program: Program): string {
 }
 
 // TODO: Make pluggable tree walkers instead of hardcoding various formats here
-export function buildNEAR(program: Program): string {
-  return NEARBindingsBuilder.build(program);
+export function buildNEAR(program: Program, nearFile: string): string {
+  return NEARBindingsBuilder.build(program, nearFile);
 }
 
 /** Builds a JSON file of a program's runtime type information. */
