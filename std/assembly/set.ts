@@ -10,11 +10,15 @@ const INITIAL_CAPACITY = 4;
 
 // @ts-ignore: decorator
 @inline
-const FILL_FACTOR: f64 = 8 / 3;
+function FILL_FACTOR(capacity: i32): i32 {
+  return (capacity * 8) / 3;
+}
 
 // @ts-ignore: decorator
 @inline
-const FREE_FACTOR: f64 = 3 / 4;
+function FREE_FACTOR(capacity: i32): i32 {
+  return (capacity * 3) / 4;
+}
 
 /** Structure of a set entry. */
 @unmanaged class SetEntry<K> {
@@ -100,7 +104,7 @@ export class Set<T> {
       // check if rehashing is necessary
       if (this.entriesOffset == this.entriesCapacity) {
         this.rehash(
-          this.entriesCount < <i32>(this.entriesCapacity * FREE_FACTOR)
+          this.entriesCount < FREE_FACTOR(this.entriesCapacity)
             ?  this.bucketsMask           // just rehash if 1/4+ entries are empty
             : (this.bucketsMask << 1) | 1 // grow capacity to next 2^N
         );
@@ -134,7 +138,7 @@ export class Set<T> {
     var halfBucketsMask = this.bucketsMask >> 1;
     if (
       halfBucketsMask + 1 >= max<u32>(INITIAL_CAPACITY, this.entriesCount) &&
-      this.entriesCount < <i32>(this.entriesCapacity * FREE_FACTOR)
+      this.entriesCount < FREE_FACTOR(this.entriesCapacity)
     ) this.rehash(halfBucketsMask);
     return true;
   }
@@ -142,7 +146,7 @@ export class Set<T> {
   private rehash(newBucketsMask: u32): void {
     var newBucketsCapacity = <i32>(newBucketsMask + 1);
     var newBuckets = new ArrayBuffer(newBucketsCapacity * <i32>BUCKET_SIZE);
-    var newEntriesCapacity = <i32>(newBucketsCapacity * FILL_FACTOR);
+    var newEntriesCapacity = FILL_FACTOR(newBucketsCapacity);
     var newEntries = new ArrayBuffer(newEntriesCapacity * <i32>ENTRY_SIZE<T>());
 
     // copy old entries to new entries
