@@ -1417,6 +1417,9 @@ declare module 'assemblyscript/src/ast' {
 	    exportPaths: Set<string> | null;
 	    /** Constructs a new source node. */
 	    constructor(normalizedPath: string, text: string, kind: SourceKind);
+	    /** Checks if this source represents native code. */
+	    readonly isNative: bool;
+	    /** Checks if this source is part of the (standard) library. */
 	    readonly isLibrary: bool;
 	}
 	/** Base class of all declaration statements. */
@@ -2345,7 +2348,7 @@ declare module 'assemblyscript/src/program' {
 	    /** Decorator flags representing built-in decorators. */
 	    decoratorFlags?: DecoratorFlags): Function;
 	    /** Gets the (possibly merged) program element linked to the specified declaration. */
-	    getElementByDeclaration(declaration: DeclarationStatement): DeclaredElement;
+	    getElementByDeclaration(declaration: DeclarationStatement): DeclaredElement | null;
 	    /** Initializes the program and its elements prior to compilation. */
 	    initialize(options: Options): void;
 	    /** Requires that a global library element of the specified kind is present and returns it. */
@@ -3179,6 +3182,8 @@ declare module 'assemblyscript/src/types' {
 	    isAssignableTo(target: Type, signednessIsRelevant?: bool): bool;
 	    /** Tests if a value of this type is assignable to the target type excl. implicit conversion. */
 	    isStrictlyAssignableTo(target: Type, signednessIsRelevant?: bool): bool;
+	    /** Tests if a value of this type can be changed to the target type using `changetype`. */
+	    isChangeableTo(target: Type): bool;
 	    /** Determines the common denominator type of two types, if there is any. */
 	    static commonDenominator(left: Type, right: Type, signednessIsImportant: bool): Type | null;
 	    /** Converts this type to a string. */
