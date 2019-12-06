@@ -2910,6 +2910,19 @@ export class Parser extends DiagnosticEmitter {
             tn.range(), ";"
           );
         }
+      } else if (tn.token == Token.OF || tn.token == Token.IN) { // Iterator
+        if (tn.token == Token.OF){
+          // at VariableStatement of Expression
+          assert (initializer && initializer.kind  == NodeKind.VARIABLE)
+          let variable = <VariableStatement>initializer;
+          assert(variable.declarations.length == 0);
+          assert (tn.skip(Token.OF));
+          let iterable = this.parseExpression(tn);
+          assert(iterable != null);
+          // return Node.createForStatement(Node.createBlockStatement)
+        } else {
+          // TODO: x in Expression)
+        }
       } else {
         this.error(
           DiagnosticCode._0_expected,
