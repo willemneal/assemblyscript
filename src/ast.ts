@@ -787,7 +787,7 @@ export abstract class Node {
   static createInterfaceDeclaration(
     name: IdentifierExpression,
     typeParameters: TypeParameterNode[] | null,
-    extendsType: NamedTypeNode | null, // can't be a function
+    extendsType: NamedTypeNode[], // can't be a function
     members: DeclarationStatement[],
     decorators: DecoratorNode[] | null,
     flags: CommonFlags,
@@ -798,7 +798,7 @@ export abstract class Node {
     stmt.flags = flags;
     stmt.name = name;
     stmt.typeParameters = typeParameters;
-    stmt.extendsType = extendsType;
+    stmt.extendsTypeInterfaces = extendsType;
     stmt.members = members;
     stmt.decorators = decorators;
     return stmt;
@@ -1945,6 +1945,8 @@ export class ImportStatement extends Statement {
 /** Represents an `interfarce` declaration. */
 export class InterfaceDeclaration extends ClassDeclaration {
   kind = NodeKind.INTERFACEDECLARATION;
+
+  extendsTypeInterfaces: NamedTypeNode[];
 }
 
 /** Represents a method declaration within a `class`. */

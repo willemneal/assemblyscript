@@ -915,7 +915,7 @@ export class Program extends DiagnosticEmitter {
       let extendsNode = assert(thisPrototype.extendsNode); // must be present if in queuedExtends
       let baseElement = resolver.resolveTypeName(extendsNode.name, thisPrototype.parent); // reports
       if (!baseElement) continue;
-      if (baseElement.kind == ElementKind.CLASS_PROTOTYPE || baseElement.kind == ElementKind.INTERFACE_PROTOTYPE) {
+      if (baseElement.kind == ElementKind.CLASS_PROTOTYPE) {
         let basePrototype = <ClassPrototype>baseElement;
         if (thisPrototype.kind == ElementKind.INTERFACE_PROTOTYPE) {
           // TODO: Interface extends class
@@ -938,6 +938,8 @@ export class Program extends DiagnosticEmitter {
           }
         }
         thisPrototype.basePrototype = basePrototype;
+      } else if (baseElement.kind == ElementKind.INTERFACE_PROTOTYPE) {
+
       } else {
         this.error(
           DiagnosticCode.A_class_may_only_extend_another_class,
@@ -1836,7 +1838,7 @@ export class Program extends DiagnosticEmitter {
     );
     if (!parent.add(name, element)) return null;
     var memberDeclarations = declaration.members;
-    if (declaration.extendsType) queuedExtends.push(element);
+    if (declaration.extendsTypeInterfaces.length > 0) queuedExtends.push(element);
     var instanceDeclarations = new Array<DeclarationStatement>();
     /**
      * Must convert field declarations to property declarations

@@ -1612,17 +1612,33 @@ export class Parser extends DiagnosticEmitter {
     }
 
     var extendsType: NamedTypeNode | null = null;
+    var extendsInterface: NamedTypeNode[] = [];
     if (tn.skip(Token.EXTENDS)) {
-      let t = this.parseType(tn);
-      if (!t) return null;
-      if (t.kind != NodeKind.NAMEDTYPE) {
-        this.error(
-          DiagnosticCode.Identifier_expected,
-          t.range
-        );
-        return null;
+      if (isInterface) {
+        do {
+          let t = this.parseType(tn);
+          if (!t) return null;
+          if (t.kind != NodeKind.NAMEDTYPE) {
+            this.error(
+              DiagnosticCode.Identifier_expected,
+              t.range
+              );
+              return null;
+            }
+            extendsInterface.push(<NamedTypeNode> t);
+          } while (tn.skip(Token.COMMA));
+        } else {
+          let t = this.parseType(tn);
+          if (!t) return null;
+          if (t.kind != NodeKind.NAMEDTYPE) {
+            this.error(
+              DiagnosticCode.Identifier_expected,
+              t.range
+            );
+            return null;
+          }
+        extendsType = <NamedTypeNode>t;
       }
-      extendsType = <NamedTypeNode>t;
     }
 
     var implementsTypes: NamedTypeNode[] | null = null;
@@ -1658,7 +1674,7 @@ export class Parser extends DiagnosticEmitter {
       declaration = Node.createInterfaceDeclaration(
         identifier,
         typeParameters,
-        extendsType,
+        extendsInterface,
         members,
         decorators,
         flags,

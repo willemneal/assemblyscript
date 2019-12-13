@@ -44,6 +44,41 @@ function testGIC<T extends IA>(gic: T): void {
 
 testGIC<IA>(aa);
 
+interface ID {
+  d(): f32;
+}
+
+interface IE extends IC, ID {
+  e(): f64;
+}
+
+class AE implements IE {
+  e(): f64 {
+   return 2.1812;
+  }
+  c(): bool {
+    return true;
+  }
+  b(): string {
+    return "eb";
+  }
+  a(): i32 {
+    return 21;
+  }
+  d(): f32 {
+    return 3.14;
+  }
+}
+
+const ae = new AE();
+
+function testIE(ie: IE): void {
+  assert(ie.e() == 2.1812);
+  assert(ie.a() == 21);
+}
+
+testIE(ae);
+
 // interface FromClass extends AA {
 //   d(): f32;
 // }

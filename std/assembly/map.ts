@@ -113,7 +113,7 @@ class KeyIterator<K,V> implements IterableIterator<K> {
 }
 
 class ValueIterator<K,V> implements IterableIterator<V> {
-  constructor(private entriesIter: EntriesIter<K,V>){}
+  constructor(private entriesIter: EntriesIter<K,V>) {}
 
   get done(): bool {
     return this.entriesIter.done;
