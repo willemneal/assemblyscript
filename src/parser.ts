@@ -618,6 +618,21 @@ export class Parser extends DiagnosticEmitter {
     return type;
   }
 
+
+  parseIntersectionType(
+    tn: Tokenizer,
+    acceptParenthesized: bool = true,
+    suppressErrors: bool = false
+  ): TypeNode | null {
+    let type = this.parseType(tn, acceptParenthesized, suppressErrors);
+    if (type == null) return null;
+    if (!tn.skip(Token.AMPERSAND)) {
+      return type;
+    }
+    let types = [type];
+
+  } 
+
   // Indicates whether tryParseSignature determined that it is handling a Signature
   private tryParseSignatureIsSignature: bool = false;
 

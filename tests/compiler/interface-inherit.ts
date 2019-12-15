@@ -48,36 +48,38 @@ interface ID {
   d(): f32;
 }
 
-interface IE extends IC, ID {
-  e(): f64;
-}
+type x = ID & IC;
 
-class AE implements IE {
-  e(): f64 {
-   return 2.1812;
-  }
-  c(): bool {
-    return true;
-  }
-  b(): string {
-    return "eb";
-  }
-  a(): i32 {
-    return 21;
-  }
-  d(): f32 {
-    return 3.14;
-  }
-}
+// interface IE extends IC, ID {
+//   e(): f64;
+// }
 
-const ae = new AE();
+// class AE implements IE {
+//   e(): f64 {
+//    return 2.1812;
+//   }
+//   c(): bool {
+//     return true;
+//   }
+//   b(): string {
+//     return "eb";
+//   }
+//   a(): i32 {
+//     return 21;
+//   }
+//   d(): f32 {
+//     return 3.14;
+//   }
+// }
 
-function testIE(ie: IE): void {
-  assert(ie.e() == 2.1812);
-  assert(ie.a() == 21);
-}
+// const ae = new AE();
 
-testIE(ae);
+// function testIE(ie: IE): void {
+//   assert(ie.e() == 2.1812);
+//   assert(ie.a() == 21);
+// }
+
+// testIE(ae);
 
 // interface FromClass extends AA {
 //   d(): f32;
