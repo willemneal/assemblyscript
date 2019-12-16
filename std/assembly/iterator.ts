@@ -14,3 +14,8 @@ export interface Iterator<T> {
 export interface IterableIterator<T> extends Iterator<T> {
   readonly iterator: IterableIterator<T>;
 }
+
+export interface Tuple<T,K> {
+  first: T;
+  second: K;
+}

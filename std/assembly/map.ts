@@ -2,7 +2,7 @@
 
 import { HASH } from "./util/hash";
 import { E_KEYNOTFOUND } from "util/error";
-import { Iterator, IteratorResult } from "iterator";
+import { Tuple } from "iterator";
 
 // A deterministic hash map based on CloseTable from https://github.com/jorendorff/dht
 
@@ -27,10 +27,18 @@ const FREE_FACTOR_N = 3;
 const FREE_FACTOR_D = 4;
 
 /** Structure of a map entry. */
-@unmanaged export class MapEntry<K,V> {
+@unmanaged export class MapEntry<K,V> implements Tuple<K,V> {
   key: K;
   value: V;
   taggedNext: usize; // LSB=1 indicates EMPTY
+
+  get first(): K {
+    return this.key;
+  }
+
+  get second(): V {
+    return this.value;
+  }
 }
 
 /** Empty bit. */

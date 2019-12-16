@@ -827,7 +827,8 @@ export abstract class Node {
     condition: Expression | null,
     incrementor: Expression | null,
     statement: Statement,
-    range: Range
+    range: Range,
+    token: Token | null = null,
   ): ForStatement {
     var stmt = new ForStatement();
     stmt.range = range;
@@ -835,6 +836,7 @@ export abstract class Node {
     stmt.condition = condition;
     stmt.incrementor = incrementor;
     stmt.statement = statement;
+    stmt.token = token
     return stmt;
   }
 
@@ -1863,6 +1865,9 @@ export class ForStatement extends Statement {
   incrementor: Expression | null;
   /** Statement being looped over. */
   statement: Statement;
+  /** Token if it is an "of" or "in" loop or null otherwise */
+  token: Token | null;
+
 }
 
 /** Indicates the kind of an array function. */
