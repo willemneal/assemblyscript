@@ -60,11 +60,25 @@ import { idof } from "./builtins";
     return (first - 0xD800 << 10) + (second - 0xDC00) + 0x10000;
   }
 
-  @operator("+") private static __concat(left: String, right: String): String {
-    return select<String>(left, changetype<String>("null"), left !== null).concat(right);
+  @operator("+") private static __concat<T = String>(left: String, right: T): String {
+    return select<String>(left, changetype<String>("null"), left !== null).concat<T>(right);
   }
 
-  concat(other: String): String {
+  concat<T = String>(_other: T): String {
+    var other: String;
+    if (!isString<T>()) {
+      if (isInteger<T>() || isFloat<T>()) {
+        //@ts-ignore
+        // tslint:disable-next-line: no-unsafe-any
+        str = changetype(other.toString());
+      }
+      if (isFunction<T>()) {
+        other = changetype<String>("[Function " + nameof<T>() + ":  " +  typeof<T>(_other) + "]");
+      }
+      other = changetype<String>("[Object " + nameof<T>() + ", id: " + idof<T>() + "]" );
+    } else {
+      other = changetype<String>(_other);
+    }
     if (other === null) other = changetype<String>("null");
     var thisSize: isize = this.length << 1;
     var otherSize: isize = other.length << 1;

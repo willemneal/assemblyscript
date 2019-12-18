@@ -1365,10 +1365,9 @@ export class Program extends DiagnosticEmitter {
   ): void {
     var name = declaration.name.text;
     var isStatic = declaration.is(CommonFlags.STATIC);
-    var acceptedFlags = DecoratorFlags.INLINE | DecoratorFlags.UNSAFE;
+    var acceptedFlags = DecoratorFlags.INLINE | DecoratorFlags.UNSAFE | DecoratorFlags.OPERATOR_BINARY;
     if (!declaration.is(CommonFlags.GENERIC)) {
-      acceptedFlags |= DecoratorFlags.OPERATOR_BINARY
-                    |  DecoratorFlags.OPERATOR_PREFIX
+      acceptedFlags |= DecoratorFlags.OPERATOR_PREFIX
                     |  DecoratorFlags.OPERATOR_POSTFIX;
     }
     if (parent.is(CommonFlags.AMBIENT)) {

@@ -2562,6 +2562,12 @@ export class Resolver extends DiagnosticEmitter {
         );
       }
     } else {
+      for (let i = 0; i < signatureNode.parameters.length; i++) {
+        let param = signatureNode.parameters[i];
+        if (param.is(CommonFlags.GENERIC)) {
+          console.log(param.name);
+        }
+      }
       assert(!typeParameterNodes || typeParameterNodes.length == 0);
     }
 
