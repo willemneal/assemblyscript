@@ -27,6 +27,19 @@ const SEP = process.platform === "win32" ? "\\" : "/";
 
 // global.Binaryen = require("../lib/binaryen");
 
+// use node require with browser fallback
+function _require(_path) {
+  if (_path == null) return null;
+  try {
+    // First try non-browser import
+    return require(_path);
+  } catch {
+    // Try browser require
+    return eval("require('" + _path + "')");
+  }
+}
+
+
 // Emscripten adds an `uncaughtException` listener to Binaryen that results in an additional
 // useless code fragment on top of an actual error. suppress this:
 if (process.removeAllListeners) process.removeAllListeners("uncaughtException");
@@ -294,7 +307,7 @@ exports.main = function main(argv, options, callback) {
         tsNodeRegistered = true;
       }
       try {
-        const classOrModule = require(require.resolve(filename, { paths: [baseDir, process.cwd()] }));
+        const classOrModule = _require(require.resolve(filename, { paths: [baseDir, process.cwd()] }));
         if (typeof classOrModule === "function") {
           Object.assign(classOrModule.prototype, {
             program,
