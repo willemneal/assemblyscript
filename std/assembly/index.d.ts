@@ -1418,6 +1418,26 @@ declare class Float64Array extends TypedArray<f64> {
   static wrap(buffer: ArrayBuffer, byteOffset?: i32, length?: i32): Float64Array;
 }
 
+interface IteratorResult<TReturn> {
+  done: bool;
+  value: TReturn;
+}
+
+interface Iterator<T,> {
+  next(): IteratorResult<T>;
+}
+
+interface Iterable<T> {
+  iterator(): Iterator<T>;
+}
+
+interface IterableIterator<T> extends Iterator<T>, Iterable<T> {}
+
+declare class MapEntry<K, V> {
+  key: K;
+  value: V;
+}
+
 /** Class representing a sequence of values of type `T`. */
 declare class Array<T> {
 

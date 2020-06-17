@@ -1,6 +1,6 @@
 (module
- (type $i32_i32_=>_none (func (param i32 i32)))
  (type $i32_=>_i32 (func (param i32) (result i32)))
+ (type $i32_i32_=>_none (func (param i32 i32)))
  (type $i32_=>_none (func (param i32)))
  (type $none_=>_none (func))
  (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
@@ -16,6 +16,7 @@
  (data (i32.const 192) "\02\00\00\00\01\00\00\00\01\00\00\00\02\00\00\00F\00")
  (data (i32.const 224) "\04\00\00\00\01\00\00\00\01\00\00\00\04\00\00\00I\00B\00")
  (data (i32.const 256) "\04\00\00\00\01\00\00\00\01\00\00\00\04\00\00\00I\00C\00")
+ (data (i32.const 288) "\04\00\00\00\01\00\00\00\01\00\00\00\04\00\00\00A\00E\00")
  (table $0 1 funcref)
  (global $class-overloading/which (mut i32) (i32.const 32))
  (global $~lib/rt/stub/startOffset (mut i32) (i32.const 0))
@@ -25,10 +26,12 @@
  (global $class-overloading/c (mut i32) (i32.const 0))
  (global $class-overloading/ia (mut i32) (i32.const 0))
  (global $class-overloading/ic (mut i32) (i32.const 0))
- (global $~started (mut i32) (i32.const 0))
- (global $~lib/heap/__heap_base i32 (i32.const 276))
- (export "_start" (func $~start))
+ (global $class-overloading/ad (mut i32) (i32.const 0))
+ (global $class-overloading/aastract (mut i32) (i32.const 0))
+ (global $class-overloading/aAnotherAbstract (mut i32) (i32.const 0))
+ (global $~lib/heap/__heap_base i32 (i32.const 308))
  (export "memory" (memory $0))
+ (start $~start)
  (func $~lib/rt/stub/maybeGrowMemory (param $0 i32)
   (local $1 i32)
   (local $2 i32)
@@ -563,6 +566,220 @@
   end
   local.get $0
  )
+ (func $class-overloading/AE#constructor (param $0 i32) (result i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 13
+   call $~lib/rt/stub/__alloc
+   call $~lib/rt/stub/__retain
+   local.set $0
+  end
+  local.get $0
+ )
+ (func $class-overloading/ID#foo (param $0 i32)
+  unreachable
+ )
+ (func $class-overloading/ID_fun (param $0 i32)
+  local.get $0
+  call $~lib/rt/stub/__retain
+  local.set $0
+  local.get $0
+  call $class-overloading/ID#foo@virtual
+  local.get $0
+  call $~lib/rt/stub/__release
+ )
+ (func $class-overloading/Abstract#constructor (param $0 i32) (result i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 4
+   i32.const 17
+   call $~lib/rt/stub/__alloc
+   call $~lib/rt/stub/__retain
+   local.set $0
+  end
+  local.get $0
+  i32.const 42
+  i32.store
+  local.get $0
+ )
+ (func $class-overloading/AAbstract#constructor (param $0 i32) (result i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 4
+   i32.const 16
+   call $~lib/rt/stub/__alloc
+   call $~lib/rt/stub/__retain
+   local.set $0
+  end
+  local.get $0
+  call $class-overloading/Abstract#constructor
+  local.set $0
+  local.get $0
+ )
+ (func $class-overloading/SubAstract#constructor (param $0 i32) (result i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 4
+   i32.const 19
+   call $~lib/rt/stub/__alloc
+   call $~lib/rt/stub/__retain
+   local.set $0
+  end
+  local.get $0
+  call $class-overloading/Abstract#constructor
+  local.set $0
+  local.get $0
+  i32.const 21
+  i32.store
+  local.get $0
+ )
+ (func $class-overloading/AAnotherAbstract#constructor (param $0 i32) (result i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 4
+   i32.const 18
+   call $~lib/rt/stub/__alloc
+   call $~lib/rt/stub/__retain
+   local.set $0
+  end
+  local.get $0
+  call $class-overloading/SubAstract#constructor
+  local.set $0
+  local.get $0
+ )
+ (func $class-overloading/Abstract#abstractMethod (param $0 i32) (result i32)
+  unreachable
+ )
+ (func $class-overloading/Abstract#get:y (param $0 i32) (result i32)
+  unreachable
+ )
+ (func $class-overloading/testAbstract (param $0 i32) (param $1 i32)
+  local.get $0
+  call $~lib/rt/stub/__retain
+  local.set $0
+  local.get $0
+  call $class-overloading/Abstract#abstractMethod@virtual
+  local.get $1
+  i32.eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 112
+   i32.const 231
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  call $class-overloading/Abstract#get:y@virtual
+  local.get $1
+  i32.const 2
+  i32.mul
+  i32.eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 112
+   i32.const 232
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  call $~lib/rt/stub/__release
+ )
+ (func $class-overloading/AAbstract#abstractMethod (param $0 i32) (result i32)
+  local.get $0
+  i32.load
+ )
+ (func $class-overloading/AAbstract#get:y (param $0 i32) (result i32)
+  local.get $0
+  i32.load
+  i32.const 2
+  i32.mul
+ )
+ (func $class-overloading/testGeneric<class-overloading/AAbstract> (param $0 i32) (param $1 i32)
+  local.get $0
+  call $~lib/rt/stub/__retain
+  local.set $0
+  local.get $0
+  call $class-overloading/AAbstract#abstractMethod
+  local.get $1
+  i32.eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 112
+   i32.const 239
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  call $class-overloading/AAbstract#get:y
+  local.get $1
+  i32.const 2
+  i32.mul
+  i32.eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 112
+   i32.const 240
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  call $~lib/rt/stub/__release
+ )
+ (func $class-overloading/AAnotherAbstract#abstractMethod (param $0 i32) (result i32)
+  i32.const 21
+ )
+ (func $class-overloading/SubAstract#get:y (param $0 i32) (result i32)
+  i32.const 42
+ )
+ (func $class-overloading/testGeneric<class-overloading/AAnotherAbstract> (param $0 i32) (param $1 i32)
+  local.get $0
+  call $~lib/rt/stub/__retain
+  local.set $0
+  local.get $0
+  call $class-overloading/AAnotherAbstract#abstractMethod
+  local.get $1
+  i32.eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 112
+   i32.const 239
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  call $class-overloading/SubAstract#get:y
+  local.get $1
+  i32.const 2
+  i32.mul
+  i32.eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 112
+   i32.const 240
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  call $~lib/rt/stub/__release
+ )
  (func $start:class-overloading
   (local $0 i32)
   global.get $~lib/heap/__heap_base
@@ -1044,15 +1261,43 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 0
+  call $class-overloading/AE#constructor
+  global.set $class-overloading/ad
+  global.get $class-overloading/ad
+  call $class-overloading/ID_fun
+  global.get $class-overloading/which
+  i32.const 304
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 112
+   i32.const 197
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 0
+  call $class-overloading/AAbstract#constructor
+  global.set $class-overloading/aastract
+  i32.const 0
+  call $class-overloading/AAnotherAbstract#constructor
+  global.set $class-overloading/aAnotherAbstract
+  global.get $class-overloading/aastract
+  i32.const 42
+  call $class-overloading/testAbstract
+  global.get $class-overloading/aAnotherAbstract
+  i32.const 21
+  call $class-overloading/testAbstract
+  global.get $class-overloading/aastract
+  i32.const 42
+  call $class-overloading/testGeneric<class-overloading/AAbstract>
+  global.get $class-overloading/aAnotherAbstract
+  i32.const 21
+  call $class-overloading/testGeneric<class-overloading/AAnotherAbstract>
  )
  (func $~start
-  global.get $~started
-  if
-   return
-  else
-   i32.const 1
-   global.set $~started
-  end
   call $start:class-overloading
  )
  (func $class-overloading/F#a<i32> (param $0 i32) (param $1 i32)
@@ -1368,6 +1613,100 @@
    end
    local.get $0
    call $class-overloading/CC#foo
+   return
+  end
+  unreachable
+ )
+ (func $class-overloading/AE#foo (param $0 i32)
+  (local $1 i32)
+  i32.const 304
+  local.set $1
+  global.get $class-overloading/which
+  call $~lib/rt/stub/__release
+  local.get $1
+  global.set $class-overloading/which
+ )
+ (func $class-overloading/ID#foo@virtual (param $0 i32)
+  (local $1 i32)
+  block $default
+   block $case0
+    local.get $0
+    i32.const 8
+    i32.sub
+    i32.load
+    local.set $1
+    local.get $1
+    i32.const 13
+    i32.eq
+    br_if $case0
+    br $default
+   end
+   local.get $0
+   call $class-overloading/AE#foo
+   return
+  end
+  unreachable
+ )
+ (func $class-overloading/Abstract#abstractMethod@virtual (param $0 i32) (result i32)
+  (local $1 i32)
+  block $default
+   block $case1
+    block $case0
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     local.set $1
+     local.get $1
+     i32.const 16
+     i32.eq
+     br_if $case0
+     local.get $1
+     i32.const 18
+     i32.eq
+     br_if $case1
+     br $default
+    end
+    local.get $0
+    call $class-overloading/AAbstract#abstractMethod
+    return
+   end
+   local.get $0
+   call $class-overloading/AAnotherAbstract#abstractMethod
+   return
+  end
+  unreachable
+ )
+ (func $class-overloading/Abstract#get:y@virtual (param $0 i32) (result i32)
+  (local $1 i32)
+  block $default
+   block $case1
+    block $case0
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     local.set $1
+     local.get $1
+     i32.const 19
+     i32.eq
+     br_if $case0
+     local.get $1
+     i32.const 18
+     i32.eq
+     br_if $case0
+     local.get $1
+     i32.const 16
+     i32.eq
+     br_if $case1
+     br $default
+    end
+    local.get $0
+    call $class-overloading/SubAstract#get:y
+    return
+   end
+   local.get $0
+   call $class-overloading/AAbstract#get:y
    return
   end
   unreachable

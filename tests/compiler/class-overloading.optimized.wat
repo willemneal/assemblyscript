@@ -2,8 +2,9 @@
  (type $i32_=>_i32 (func (param i32) (result i32)))
  (type $none_=>_none (func))
  (type $i32_=>_none (func (param i32)))
- (type $i32_i32_i32_i32_=>_none (func (param i32 i32 i32 i32)))
  (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
+ (type $i32_i32_=>_none (func (param i32 i32)))
+ (type $i32_i32_i32_i32_=>_none (func (param i32 i32 i32 i32)))
  (type $i32_i32_i32_=>_i32 (func (param i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (memory $0 1)
@@ -15,36 +16,57 @@
  (data (i32.const 1200) "\02\00\00\00\01\00\00\00\01\00\00\00\02\00\00\00F")
  (data (i32.const 1232) "\04\00\00\00\01\00\00\00\01\00\00\00\04\00\00\00I\00B")
  (data (i32.const 1264) "\04\00\00\00\01\00\00\00\01\00\00\00\04\00\00\00I\00C")
+ (data (i32.const 1296) "\04\00\00\00\01\00\00\00\01\00\00\00\04\00\00\00A\00E")
  (global $class-overloading/which (mut i32) (i32.const 1040))
  (global $~lib/rt/stub/offset (mut i32) (i32.const 0))
  (global $class-overloading/a (mut i32) (i32.const 0))
  (global $class-overloading/ia (mut i32) (i32.const 0))
  (global $class-overloading/ic (mut i32) (i32.const 0))
- (global $~started (mut i32) (i32.const 0))
- (export "_start" (func $~start))
+ (global $class-overloading/ad (mut i32) (i32.const 0))
+ (global $class-overloading/aastract (mut i32) (i32.const 0))
+ (global $class-overloading/aAnotherAbstract (mut i32) (i32.const 0))
  (export "memory" (memory $0))
- (func $~lib/rt/stub/__alloc (param $0 i32) (result i32)
-  (local $1 i32)
+ (start $~start)
+ (func $~lib/rt/stub/__alloc (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
+  (local $5 i32)
+  (local $6 i32)
+  local.get $0
+  i32.const 1073741808
+  i32.gt_u
+  if
+   unreachable
+  end
   global.get $~lib/rt/stub/offset
   i32.const 16
   i32.add
-  local.tee $3
-  i32.const 16
-  i32.add
-  local.tee $1
-  memory.size
   local.tee $4
+  local.get $0
+  i32.const 15
+  i32.add
+  i32.const -16
+  i32.and
+  local.tee $2
+  i32.const 16
+  local.get $2
+  i32.const 16
+  i32.gt_u
+  select
+  local.tee $6
+  i32.add
+  local.tee $2
+  memory.size
+  local.tee $5
   i32.const 16
   i32.shl
-  local.tee $2
+  local.tee $3
   i32.gt_u
   if
-   local.get $4
-   local.get $1
+   local.get $5
    local.get $2
+   local.get $3
    i32.sub
    i32.const 65535
    i32.add
@@ -52,16 +74,16 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.tee $2
-   local.get $4
-   local.get $2
+   local.tee $3
+   local.get $5
+   local.get $3
    i32.gt_s
    select
    memory.grow
    i32.const 0
    i32.lt_s
    if
-    local.get $2
+    local.get $3
     memory.grow
     i32.const 0
     i32.lt_s
@@ -70,29 +92,30 @@
     end
    end
   end
-  local.get $1
+  local.get $2
   global.set $~lib/rt/stub/offset
-  local.get $3
+  local.get $4
   i32.const 16
   i32.sub
-  local.tee $1
-  i32.const 16
+  local.tee $2
+  local.get $6
   i32.store
-  local.get $1
+  local.get $2
   i32.const 1
   i32.store offset=4
+  local.get $2
   local.get $1
-  local.get $0
   i32.store offset=8
-  local.get $1
-  i32.const 0
+  local.get $2
+  local.get $0
   i32.store offset=12
-  local.get $3
+  local.get $4
  )
  (func $class-overloading/B#constructor (param $0 i32) (result i32)
   local.get $0
   i32.eqz
   if
+   i32.const 0
    i32.const 4
    call $~lib/rt/stub/__alloc
    local.set $0
@@ -100,6 +123,7 @@
   local.get $0
   i32.eqz
   if (result i32)
+   i32.const 0
    i32.const 3
    call $~lib/rt/stub/__alloc
   else
@@ -245,6 +269,7 @@
   if (result i32)
    local.get $0
   else
+   i32.const 0
    i32.const 6
    call $~lib/rt/stub/__alloc
   end
@@ -255,13 +280,119 @@
   if (result i32)
    local.get $0
   else
+   i32.const 0
    i32.const 7
    call $~lib/rt/stub/__alloc
   end
   call $class-overloading/D#constructor
  )
+ (func $class-overloading/Abstract#constructor (param $0 i32) (result i32)
+  local.get $0
+  i32.eqz
+  if
+   i32.const 4
+   i32.const 17
+   call $~lib/rt/stub/__alloc
+   local.set $0
+  end
+  local.get $0
+  i32.const 42
+  i32.store
+  local.get $0
+ )
+ (func $class-overloading/testAbstract (param $0 i32) (param $1 i32)
+  (local $2 i32)
+  block $__inlined_func$class-overloading/Abstract#abstractMethod@virtual
+   block $default
+    block $case1
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     local.tee $2
+     i32.const 16
+     i32.ne
+     if
+      local.get $2
+      i32.const 18
+      i32.eq
+      br_if $case1
+      br $default
+     end
+     local.get $0
+     i32.load
+     local.set $2
+     br $__inlined_func$class-overloading/Abstract#abstractMethod@virtual
+    end
+    i32.const 21
+    local.set $2
+    br $__inlined_func$class-overloading/Abstract#abstractMethod@virtual
+   end
+   unreachable
+  end
+  local.get $1
+  local.get $2
+  i32.ne
+  if
+   i32.const 0
+   i32.const 1120
+   i32.const 231
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  block $__inlined_func$class-overloading/Abstract#get:y@virtual
+   block $default0
+    block $case11
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     local.tee $2
+     i32.const 19
+     i32.eq
+     local.get $2
+     i32.const 18
+     i32.eq
+     i32.or
+     i32.eqz
+     if
+      local.get $2
+      i32.const 16
+      i32.eq
+      br_if $case11
+      br $default0
+     end
+     i32.const 42
+     local.set $0
+     br $__inlined_func$class-overloading/Abstract#get:y@virtual
+    end
+    local.get $0
+    i32.load
+    i32.const 1
+    i32.shl
+    local.set $0
+    br $__inlined_func$class-overloading/Abstract#get:y@virtual
+   end
+   unreachable
+  end
+  local.get $0
+  local.get $1
+  i32.const 1
+  i32.shl
+  i32.ne
+  if
+   i32.const 0
+   i32.const 1120
+   i32.const 232
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+ )
  (func $start:class-overloading
-  i32.const 1296
+  (local $0 i32)
+  i32.const 1328
   global.set $~lib/rt/stub/offset
   i32.const 0
   call $class-overloading/B#constructor
@@ -328,6 +459,7 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 0
   i32.const 5
   call $~lib/rt/stub/__alloc
   call $class-overloading/B#constructor
@@ -523,6 +655,7 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 0
   i32.const 8
   call $~lib/rt/stub/__alloc
   call $class-overloading/E#constructor
@@ -591,6 +724,7 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 0
   i32.const 10
   call $~lib/rt/stub/__alloc
   global.set $class-overloading/ia
@@ -610,6 +744,7 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 0
   i32.const 12
   call $~lib/rt/stub/__alloc
   global.set $class-overloading/ic
@@ -629,15 +764,93 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 0
+  i32.const 13
+  call $~lib/rt/stub/__alloc
+  global.set $class-overloading/ad
+  block $__inlined_func$class-overloading/ID#foo@virtual
+   global.get $class-overloading/ad
+   i32.const 8
+   i32.sub
+   i32.load
+   i32.const 13
+   i32.eq
+   if
+    i32.const 1312
+    global.set $class-overloading/which
+    br $__inlined_func$class-overloading/ID#foo@virtual
+   end
+   unreachable
+  end
+  global.get $class-overloading/which
+  i32.const 1312
+  call $~lib/string/String.__eq
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 1120
+   i32.const 197
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
+  end
+  i32.const 4
+  i32.const 16
+  call $~lib/rt/stub/__alloc
+  call $class-overloading/Abstract#constructor
+  global.set $class-overloading/aastract
+  i32.const 4
+  i32.const 18
+  call $~lib/rt/stub/__alloc
+  local.tee $0
+  if (result i32)
+   local.get $0
+  else
+   i32.const 4
+   i32.const 19
+   call $~lib/rt/stub/__alloc
+  end
+  call $class-overloading/Abstract#constructor
+  local.tee $0
+  i32.const 21
+  i32.store
+  local.get $0
+  global.set $class-overloading/aAnotherAbstract
+  global.get $class-overloading/aastract
+  i32.const 42
+  call $class-overloading/testAbstract
+  global.get $class-overloading/aAnotherAbstract
+  i32.const 21
+  call $class-overloading/testAbstract
+  global.get $class-overloading/aastract
+  local.tee $0
+  i32.load
+  i32.const 42
+  i32.ne
+  if
+   i32.const 0
+   i32.const 1120
+   i32.const 239
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  i32.load
+  i32.const 1
+  i32.shl
+  i32.const 84
+  i32.ne
+  if
+   i32.const 0
+   i32.const 1120
+   i32.const 240
+   i32.const 3
+   call $~lib/builtins/abort
+   unreachable
+  end
  )
  (func $~start
-  global.get $~started
-  if
-   return
-  else
-   i32.const 1
-   global.set $~started
-  end
   call $start:class-overloading
  )
  (func $class-overloading/A#a<i32>@virtual (param $0 i32)

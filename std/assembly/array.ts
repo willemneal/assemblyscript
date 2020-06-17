@@ -556,6 +556,24 @@ export class Array<T> {
     return this.join();
   }
 
+  static from<T, U = T>(iterable: Iterable<T>, mapFn: ((t: T) => U) | null = null): Array<U> {
+    const arr = new Array<U>();
+    const iter = iterable.iterator();
+    var res = iter.next();
+    var length = 0;
+    while (!res.done) {
+      if (mapFn) {
+        arr[length++] = mapFn(res.value);
+      } else {
+        //@ts-ignore U = T
+        arr[length++] =  res.value;
+      }
+      res = iter.next();
+    }
+    arr.length = length;
+    return arr;
+  }
+
   // RT integration
 
   @unsafe private __visit_impl(cookie: u32): void {
